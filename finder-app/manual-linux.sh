@@ -48,8 +48,8 @@ then
    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/scripts/mkinitramfs.sh 
    
    cd ${OUTDIR}/rootfs/assignments/conf/
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/conf/username.tx 
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/conf/assignment.tx 
+   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/username.txt 
+   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/assignment.txt 
    
    cd ${OUTDIR}/rootfs/assignments/
    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/autorun-qemu.sh 
