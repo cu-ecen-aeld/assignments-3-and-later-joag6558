@@ -1,4 +1,17 @@
 #include "systemcalls.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+
+
+#include <fcntl.h>
+#include <syslog.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -17,7 +30,9 @@ bool do_system(const char *cmd)
  *   or false() if it returned a failure
 */
 
-    return true;
+   int ret = system(cmd);
+   
+    return ret;
 }
 
 /**
@@ -34,15 +49,23 @@ bool do_system(const char *cmd)
 *   by the command issued in @param arguments with the specified arguments.
 */
 
+int global;
 bool do_exec(int count, ...)
 {
     va_list args;
     va_start(args, count);
     char * command[count+1];
     int i;
+    int ret=true;
+    pid_t child_pid;
+    int child_status;
+    /*pid_t tpid;*/
+    int local=0;
+  
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
+        printf("command %s\n",command[i]);
     }
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
@@ -59,9 +82,53 @@ bool do_exec(int count, ...)
  *
 */
 
+     
+  child_pid = fork();
+
+
+        if (child_pid == 0) /* fork() returns 0 for the child process */
+        {
+            printf("child process!\n");
+
+            // Increment the local and global variables
+            local++;
+            global++;
+
+            printf("child PID =  %d, parent pid = %d\n", getpid(), getppid());
+            printf("\n child's local = %d, child's global = %d\n",local,global);
+
+            execv(command[0], command); // call whoami command
+            return false;
+            /*exit(0);*/
+
+         }
+         else /* parent process */
+         {
+             printf("parent process!\n");
+             printf("parent PID =  %d, child pid = %d\n", getpid(), child_pid);
+             wait(&child_status); /* wait for child to exit, and store child's exit status */
+             printf("Child exit code: %d\n", WEXITSTATUS(child_status));
+
+             //The change in local and global variable in child process should not reflect here in parent process.
+             printf("\n Parent'z local = %d, parent's  global = %d\n",local,global);
+
+             printf("Parent says bye!\n");
+             exit(0);  /* parent exits */
+         }
+         
+          
     va_end(args);
 
-    return true;
+printf("exiting with Child exit code: %d\n", WEXITSTATUS(child_status));
+if( WEXITSTATUS(child_status) == 0){
+ret=false;
+}
+else
+{
+ret=true;
+}
+printf("do_exec %d\n", ret);
+   return ret;
 }
 
 /**
@@ -75,9 +142,17 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     va_start(args, count);
     char * command[count+1];
     int i;
+    int ret=true;
+    
+    pid_t child_pid;
+    int child_status;
+    pid_t tpid;
+    int fd;
+    
     for(i=0; i<count; i++)
     {
         command[i] = va_arg(args, char *);
+        printf("command %s\n",command[i]);
     }
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
@@ -93,7 +168,31 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
-    va_end(args);
+   
 
-    return true;
+fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+if (fd < 0) { perror("open"); abort(); }
+  child_pid = fork();
+
+switch (child_pid) {
+  case -1: perror("fork"); abort();
+  case 0:
+    if (dup2(fd, 1) < 0) { perror("dup2"); abort(); }
+    close(fd);
+    execvp(command[0], command); perror("execvp"); abort();
+    ret = false;
+  default:
+    close(fd);
+    /* do whatever the parent wants to do. */
+    do {
+       tpid = wait(&child_status);
+       if(tpid != child_pid) kill(tpid, SIGSEGV);
+     } while(tpid != child_pid);
 }
+
+
+    va_end(args);
+printf("do_exec_redirect %d\n", ret);
+    return ret;
+}
+
