@@ -32,7 +32,6 @@ mkdir -p ${OUTDIR}/rootfs/scripts
 mkdir -p ${OUTDIR}/rootfs/assignments
 mkdir -p ${OUTDIR}/rootfs/assignments/conf
 
-echo "${OUTDIR}/rootfs/Makefile"
 
 if [ ! -e "${OUTDIR}/rootfs/Makefile" ]
 then
