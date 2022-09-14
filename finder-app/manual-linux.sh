@@ -36,14 +36,14 @@ if [ ! -e "${OUTDIR}/rootfs/Makefile" ]
 then
 
    echo "copying rootfs files "
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/Makefile ${OUTDIR}/rootfs/Makefile
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
-   cp -r /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
-   cp -r /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/autorun-qemu.sh
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/finder.sh ${OUTDIR}/rootfs/assignments/finder.sh
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/finder-test.sh ${OUTDIR}/rootfs/assignments/finder-test.sh
-   cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/writer ${OUTDIR}/rootfs/assignments/writer
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/Makefile ${OUTDIR}/rootfs/Makefile
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
+   cp -r /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
+   cp -r /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/autorun-qemu.sh
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/finder.sh ${OUTDIR}/rootfs/assignments/finder.sh
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/finder-test.sh ${OUTDIR}/rootfs/assignments/finder-test.sh
+   cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/writer ${OUTDIR}/rootfs/assignments/writer
 
    make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
 fi
@@ -74,8 +74,8 @@ if [ ! -e "${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image" ]; then
     git checkout ${KERNEL_VERSION}
 
     # TODO: Add your kernel build steps here
-    cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/kernel/Makefile ${OUTDIR}/kernel/Makefile
-    cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/linux-5.1.10-ecea5305_defconfig
+    cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/kernel/Makefile ${OUTDIR}/kernel/Makefile
+    cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/linux-5.1.10-ecea5305_defconfig
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" install
       
@@ -90,8 +90,8 @@ then
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
-    cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/sysapps/Makefile ${OUTDIR}/sysapps/Makefile
-    cp /home/syslaptop/projects/msee/ecea-5305/week2/assignments-3-and-later-joag6558/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/sysapps/busybox-1.33.1-arm64_defconfig
+    cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/sysapps/Makefile ${OUTDIR}/sysapps/Makefile
+    cp /home/syslaptop/projects/msee/ecea-5305/week2b/assignments-3-and-later-joag6558/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/sysapps/busybox-1.33.1-arm64_defconfig
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" install
    
