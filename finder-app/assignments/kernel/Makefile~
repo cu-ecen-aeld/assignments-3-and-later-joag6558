@@ -1,0 +1,94 @@
+##############################################################################
+#
+#
+# Linux Kernel Makefile
+#
+##############################################################################
+
+ifndef ECEA5305_PRJROOT
+    $(error You must first source the BSP environment: "source tuner-bsp-env")
+endif
+
+include $(ECEA5305_PRJROOT)/build/kernel_compile.mk
+
+KERNEL_VERSION = 5.1.10
+
+#KERNEL_SRCDIR = linux-$(KERNEL_VERSION)
+KERNEL_SRCDIR = linux-stable
+KERNEL_ARCHIVE = $(KERNEL_SRCDIR).tar.xz
+ECEA5305_DEFCONFIG = linux-5.1.10-ecea5305_defconfig
+
+BUILD_VERBOSE_OPTIONS =
+#BUILD_VERBOSE_OPTIONS = V=1
+
+
+.PHONY: help
+help:
+	@echo  'Linux Kernel Targets:'
+	@echo  '    menuconfig        - Configures Kernel for arm64'
+	@echo  '    all               - Build Kernel for arm64'
+	@echo  '    install           - Install kernel for arm64'
+	@echo  '    ${OUTDIR}         - oupt dir'
+
+.PHONY: all
+all: dobuild
+
+.PHONY: dobuild
+dobuild: build/.config
+	$(MAKE) -C build $(BUILD_VERBOSE_OPTIONS) -j4  ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) all
+	$(MAKE) -C build $(BUILD_VERBOSE_OPTIONS) -j4 ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) dtbs
+	$(MAKE) -C build $(BUILD_VERBOSE_OPTIONS) -j4 ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) modules
+
+#	cp -a build/arch/arm/boot/zImage $(RFCONCEPTS_PRJROOT)/images/zImage
+
+#	$(MAKE) -C build $(BUILD_VERBOSE_OPTIONS) ARCH=arm64 \
+#	    INSTALL_MOD_PATH=$(ECEA5305_ROOTFS) modules_install
+#	@if [ ! -d $(ECEA5305_ROOTFS)/lib/firmware/ ] ; \
+#	  then \
+#	     mkdir '$(ECEA5305_ROOTFS)/lib/firmware/' ; \
+#	  fi
+#	cp -r build/firmware/*.dtbo $(ECEA5305_ROOTFS)/lib/firmware/
+
+build/.config: 
+	mkdir -p ./build/
+	cp $(ECEA5305_DEFCONFIG) build/.config
+	$(MAKE) -C ../$(KERNEL_SRCDIR) ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) O=../../build oldconfig	
+
+.PHONY: menuconfig
+menuconfig: #build/.config
+	$(MAKE) -C build ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) menuconfig
+
+.PHONY: defconfig
+defconfig: #build/.config
+	$(MAKE) -C build ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) defconfig
+
+
+.PHONY: install
+install: #dobuild
+	cp -a $(OUTDIR)/kernel/build/arch/arm64/boot/Image $(OUTDIR)
+
+	$(MAKE) -C build $(BUILD_VERBOSE_OPTIONS) ARCH=arm64 \
+	    INSTALL_MOD_PATH=$(OUTDIR)/rootfs/fs modules_install
+#	@if [ ! -d $(ECEA5305_ROOTFS)/lib/firmware/ ] ; \
+#	  then \
+#	     mkdir '$(ECEA5305_ROOTFS)/lib/firmware/' ; \
+#	  fi
+#	cp -r build/firmware/*.dtbo $(ECEA5305_ROOTFS)/lib/firmware/
+
+.PHONY: clean
+clean:
+	-@if [ -f build/Makefile ] ; \
+	  then \
+	    $(MAKE) -C build clean ; \
+	  fi
+
+.PHONY: mrproper distclean
+mrproper distclean:
+	-@if [ -d build ] ; \
+	  then \
+	     rm -rf build ; \
+	  fi
+	-@if [ -d src ] ; \
+	  then \
+	     rm -rf src ; \
+	  fi

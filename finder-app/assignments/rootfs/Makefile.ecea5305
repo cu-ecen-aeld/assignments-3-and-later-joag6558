@@ -1,0 +1,66 @@
+##############################################################################
+#
+#
+# RootFS Makefile
+#
+##############################################################################
+
+ifndef ECEA5305_PRJROOT
+    $(error You must first source the BSP environment: "source bsp-env")
+endif
+
+CURRDIR := $(shell echo "$$(pwd)")
+
+STAGE_DIR := stage
+
+.PHONY: help
+help:
+	@echo  'Rootfs Targets:'
+	@echo  '    firmware          - Create the firmware archive'
+	@echo  '    fwbundle          - Create the firmware upgrade bundle'
+	@echo  '    distclean         - Remove the root filesystem'
+
+.PHONY: firmware
+firmware: initramfs
+
+INITRAMFS_FILES = bin dev etc home lib lib64 mnt proc root sbin sys tmp usr var
+INITRAMFS_DEPS = fs/bin fs/dev fs/etc fs/home fs/lib fs/lib64 fs/mnt fs/proc fs/root \
+    fs/sbin fs/sys fs/tmp fs/usr fs/usr/bin fs/var
+.PHONY: initramfs
+initramfs: scripts/mkinitramfs.sh fs $(INITRAMFS_DEPS)
+	@if [ -d ./$(STAGE_DIR)/initramfs ] ; \
+	  then \
+	     rm -rf ./$(STAGE_DIR)/initramfs/ ; \
+	  fi
+	mkdir -p ./$(STAGE_DIR)/initramfs/
+	@if [ ! -d ./$(STAGE_DIR)/initramfs/ ] ; \
+	  then \
+	     echo "Unable to Create directory '$(STAGE_DIR)/initramfs'." ; \
+	     false ; \
+	  fi
+	( cd fs/ && cp -a $(INITRAMFS_FILES) "$(CURRDIR)/$(STAGE_DIR)/initramfs/" )
+
+	@if [ ! -e ./$(STAGE_DIR)/initramfs/init ] ; \
+	  then \
+	     ln -s bin/busybox ./$(STAGE_DIR)/initramfs/init ; \
+	  fi
+	touch ./$(STAGE_DIR)/initramfs/ecea5305-initramfs
+	( rm -f ./$(STAGE_DIR)/initramfs/var/*/* )
+	( cd ./$(STAGE_DIR)/initramfs/ \
+	  && find lib/modules/ -name \*.ko \
+	    -exec aarch64-none-linux-gnu-strip --strip-unneeded {} \; )
+
+	( cp -a assignments/* ./$(STAGE_DIR)/initramfs/home/.)
+	( cd ./$(STAGE_DIR)/initramfs/ && sudo mknod -m 666 dev/null c 3 1 )
+	( cd ./$(STAGE_DIR)/initramfs/ && sudo mknod -m 600 dev/console c 5 1 )
+	( cd ./$(STAGE_DIR)/initramfs/ && sudo chown -R root:root * )
+
+	scripts/mkinitramfs.sh $(STAGE_DIR)/initramfs/ $(STAGE_DIR)/initramfs.cpio.gz
+
+
+.PHONY: clean mrproper distclean
+clean mrproper distclean: remove_optfs_mountpoint
+	@if [ -d $(STAGE_DIR) ] ; \
+	  then \
+	     rm -rf ./$(STAGE_DIR)/ ; \
+	  fi

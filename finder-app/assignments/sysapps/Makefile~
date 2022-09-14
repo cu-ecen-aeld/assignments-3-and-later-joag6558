@@ -1,0 +1,91 @@
+##############################################################################
+#
+# Busybox Makefile
+#
+##############################################################################
+
+ifndef ECEA5305_PRJROOT
+    $(error You must first source the BSP environment: "source bsp-env")
+endif
+
+BUSYBOX_VERSION = 1.33.1
+BUSYBOX_SOURCE_DIR = busybox-$(BUSYBOX_VERSION)
+BUSYBOX_ARCHIVE = $(BUSYBOX_SOURCE_DIR).tar.bz2
+BUSYBOX_DEFCONFIG = archive/$(BUSYBOX_SOURCE_DIR)-arm64_defconfig
+
+include $(ECEA5305_PRJROOT)/build/cross_compile.mk
+
+
+
+.PHONY: help
+help:
+	@echo 'Targets are:'
+	@echo '    clean'
+	@echo '    distclean'
+	@echo '    all'
+	@echo '    config'
+	@echo '    install'
+
+.PHONY: all
+all: dobuild
+
+.PHONY: dobuild
+dobuild: build/.config
+	$(MAKE) -C build -j4  ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE)
+
+src/PATCHED-$(BUSYBOX_SOURCE_DIR): archive/$(BUSYBOX_ARCHIVE)
+	-@if [ -d src/$(BUSYBOX_SOURCE_DIR) ] ; \
+	  then \
+	     rm -rf src/$(BUSYBOX_SOURCE_DIR) ; \
+	  fi
+	-@if [ ! -d src ] ; \
+	  then \
+	    mkdir src ; \
+	  fi
+	@echo -n '    Uncompressing' src/$(BUSYBOX_SOURCE_DIR) '...'
+	@(cd src && tar xjf ../archive/$(BUSYBOX_ARCHIVE) )
+	@echo ' Done.'
+#	( cd src/$(BUSYBOX_SOURCE_DIR) \
+#	  && patch -p1 \
+#	     < ../../archive/patch-$(BUSYBOX_SOURCE_DIR)-001-path-and-root-login.patch )
+#	touch src/PATCHED-$(BUSYBOX_SOURCE_DIR)
+
+build/.config: $(BUSYBOX_DEFCONFIG) src/PATCHED-$(BUSYBOX_SOURCE_DIR)
+	mkdir -p ./build/
+	cp $(BUSYBOX_DEFCONFIG) build/.config
+	$(MAKE) -C src/$(BUSYBOX_SOURCE_DIR) ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) O=../../build oldconfig
+
+.PHONY: config
+config: build/.config
+
+.PHONY: menuconfig
+menuconfig: build/.config
+	$(MAKE) -C build menuconfig
+
+.PHONY: defconfig
+defconfig:
+	$(MAKE) -C build defconfig
+
+.PHONY: install
+install: #dobuild
+#	$(MAKE) -C ./build CONFIG_PREFIX="${ECEA5305_PRJROOT}/rootfs/fs"  ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) install
+	$(MAKE) -C ./build CONFIG_PREFIX="${OUTDIR}/rootfs"  ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE) install
+
+
+.PHONY: clean
+clean:
+	-@if [ -f build/Makefile ] ; \
+	  then \
+	    $(MAKE) -C build clean ; \
+	  fi
+
+.PHONY: mrproper distclean
+mrproper distclean:
+	-@if [ -d build ] ; \
+	  then \
+	     rm -rf build ; \
+	  fi
+	-@if [ -d src ] ; \
+	  then \
+	     rm -rf src ; \
+	  fi
