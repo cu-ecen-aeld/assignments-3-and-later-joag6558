@@ -40,22 +40,22 @@ then
 
    echo "copying rootfs files "
    cd ${OUTDIR}/rootfs/
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/Makefile 
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/Makefile.ecea5305
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/Makefile" 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/Makefile.ecea5305"
    
    cd ${OUTDIR}/rootfs/scripts/
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/scripts/install-runtimelibs.sh 
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/scripts/mkinitramfs.sh 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/scripts/install-runtimelibs.sh" 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/rootfs/scripts/mkinitramfs.sh" 
    
    cd ${OUTDIR}/rootfs/assignments/conf/
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/username.txt 
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/assignment.txt 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/username.txt" 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/tree/master/conf/assignment.txt" 
    
    cd ${OUTDIR}/rootfs/assignments/
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/autorun-qemu.sh 
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/finder.sh
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/finder-test.sh
-   wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/writer 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/autorun-qemu.sh" 
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/finder.sh"
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/finder-test.sh"
+   wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/writer" 
    
    make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
 fi
@@ -87,8 +87,8 @@ if [ ! -e "${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image" ]; then
 
     # TODO: Add your kernel build steps here
     cd ${OUTDIR}/kernel/
-    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/kernel/Makefile 
-    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/masterfinder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig 
+    wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/kernel/Makefile" 
+    wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/masterfinder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig" 
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" install
       
@@ -104,8 +104,8 @@ then
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
     cd ${OUTDIR}/sysapps/
-    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/sysapps/Makefile 
-    wget https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig
+    wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/sysapps/Makefile" 
+    wget "https://github.com/cu-ecen-aeld/assignments-3-and-later-joag6558/blob/master/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig"
     
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" install
