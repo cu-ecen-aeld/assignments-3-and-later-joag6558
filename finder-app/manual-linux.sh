@@ -24,47 +24,43 @@ fi
 
 mkdir -p ${OUTDIR}
 
+cd "$OUTDIR"
+
+echo "Making rootfs directory"
+mkdir -p ${OUTDIR}/rootfs
+mkdir -p ${OUTDIR}/rootfs/scripts
+mkdir -p ${OUTDIR}/rootfs/assignments
+mkdir -p ${OUTDIR}/rootfs/assignments/conf
+
+if [ ! -e "${OUTDIR}/rootfs/Makefile" ]
+then
+
+   echo "copying rootfs files "
+
+   cp ${FINDER_APP_DIR}/finder-app/assignments/rootfs/Makefile ${OUTDIR}/rootfs/
+   cp ${FINDER_APP_DIR}/finder-app/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
+   cp -r ${FINDER_APP_DIR}/finder-app/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
+   cp -r ${FINDER_APP_DIR}/conf/* ${OUTDIR}/rootfs/assignments/conf/
+   cp ${FINDER_APP_DIR}/finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/finder-app/finder.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/finder-app/finder-test.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/finder-app/writer ${OUTDIR}/rootfs/assignments/
+
+   make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
+fi
+
 
 if [ ! -d "${OUTDIR}/kernel" ]
 then
     echo "making kernel directory"
     mkdir -p ${OUTDIR}/kernel
-    cp ./finder-app/assignments/kernel/Makefile ${OUTDIR}/kernel/Makefile
-    cp ./finder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/
 fi
 
 if [ ! -d "${OUTDIR}/sysapps" ]
 then
     echo "making kernel directory"
     mkdir -p ${OUTDIR}/sysapps
-    cp ./finder-app/assignments/sysapps/Makefile ${OUTDIR}/sysapps/
-    cp ./finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/
 fi
-
-   
-if [ ! -e "${OUTDIR}/rootfs/Makefile" ]
-then
-
-   echo "Making rootfs directory"
-   mkdir -p ${OUTDIR}/rootfs
-   mkdir -p ${OUTDIR}/rootfs/scripts
-   mkdir -p ${OUTDIR}/rootfs/assignments
-   mkdir -p ${OUTDIR}/rootfs/assignments/conf
-
-   cp ./finder-app/assignments/rootfs/Makefile ${OUTDIR}/rootfs/Makefile
-   cp ./finder-app/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
-   cp -r ./finder-app/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
-   cp -r ./conf/* ${OUTDIR}/rootfs/assignments/conf/
-   cp ./finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/autorun-qemu.sh
-   cp ./finder-app/finder.sh ${OUTDIR}/rootfs/assignments/finder.sh
-   cp ./finder-app/finder-test.sh ${OUTDIR}/rootfs/assignments/finder-test.sh
-   cp ./finder-app/writer ${OUTDIR}/rootfs/assignments/writer
-
-   make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
-fi
-
-
-
 
 cd "$OUTDIR"
 
@@ -79,7 +75,8 @@ if [ ! -e "${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image" ]; then
     git checkout ${KERNEL_VERSION}
 
     # TODO: Add your kernel build steps here
-
+    cp ${FINDER_APP_DIR}/finder-app/assignments/kernel/Makefile ${OUTDIR}/kernel/
+    cp ${FINDER_APP_DIR}/finder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" install
       
@@ -94,7 +91,8 @@ then
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
-
+    cp ${FINDER_APP_DIR}/finder-app/assignments/sysapps/Makefile ${OUTDIR}/sysapps/
+    cp ${FINDER_APP_DIR}/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" install
    
