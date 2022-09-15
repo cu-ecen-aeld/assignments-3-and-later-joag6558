@@ -37,14 +37,14 @@ then
 
    echo "copying rootfs files "
 
-   cp ${FINDER_APP_DIR}/finder-app/assignments/rootfs/Makefile ${OUTDIR}/rootfs/
-   cp ${FINDER_APP_DIR}/finder-app/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
-   cp -r ${FINDER_APP_DIR}/finder-app/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
-   cp -r ${FINDER_APP_DIR}/conf/* ${OUTDIR}/rootfs/assignments/conf/
-   cp ${FINDER_APP_DIR}/finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
-   cp ${FINDER_APP_DIR}/finder-app/finder.sh ${OUTDIR}/rootfs/assignments/
-   cp ${FINDER_APP_DIR}/finder-app/finder-test.sh ${OUTDIR}/rootfs/assignments/
-   cp ${FINDER_APP_DIR}/finder-app/writer ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile ${OUTDIR}/rootfs/
+   cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
+   cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
+   cp -r /__w/assignments-3-and-later-joag6558/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
+   cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/finder.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/finder-test.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/writer ${OUTDIR}/rootfs/assignments/
 
    make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
 fi
@@ -75,8 +75,8 @@ if [ ! -e "${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image" ]; then
     git checkout ${KERNEL_VERSION}
 
     # TODO: Add your kernel build steps here
-    cp ${FINDER_APP_DIR}/finder-app/assignments/kernel/Makefile ${OUTDIR}/kernel/
-    cp ${FINDER_APP_DIR}/finder-app/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/
+    cp ${FINDER_APP_DIR}/assignments/kernel/Makefile ${OUTDIR}/kernel/
+    cp ${FINDER_APP_DIR}/assignments/kernel/linux-5.1.10-ecea5305_defconfig ${OUTDIR}/kernel/
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/kernel OUTDIR="${OUTDIR}" install
       
@@ -91,8 +91,8 @@ then
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
-    cp ${FINDER_APP_DIR}/finder-app/assignments/sysapps/Makefile ${OUTDIR}/sysapps/
-    cp ${FINDER_APP_DIR}/finder-app/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/
+    cp ${FINDER_APP_DIR}/assignments/sysapps/Makefile ${OUTDIR}/sysapps/
+    cp ${FINDER_APP_DIR}/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" install
    
