@@ -43,7 +43,7 @@ then
    cp -r /__w/assignments-3-and-later-joag6558/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
-   cp ${FINDER_APP_DIR}/fassignments/inder-test.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/assignments/inder-test.sh ${OUTDIR}/rootfs/assignments/
    cp -a ${FINDER_APP_DIR}/assignments/writer ${OUTDIR}/rootfs/assignments/writer
 
 
