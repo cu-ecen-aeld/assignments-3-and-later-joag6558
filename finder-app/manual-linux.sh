@@ -40,10 +40,10 @@ then
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile ${OUTDIR}/rootfs/
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
    cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
-   cp -r /__w/assignments-3-and-later-joag6558/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
+   cp -r ${FINDER_APP_DIR}/assignments/conf/* ${OUTDIR}/rootfs/assignments/conf/
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
-   cp ${FINDER_APP_DIR}/assignments/inder-test.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/assignments/finder-test.sh ${OUTDIR}/rootfs/assignments/
    cp -a ${FINDER_APP_DIR}/assignments/writer ${OUTDIR}/rootfs/assignments/writer
 
 
@@ -93,7 +93,7 @@ then
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
     cp ${FINDER_APP_DIR}/assignments/sysapps/Makefile ${OUTDIR}/sysapps/
-    cp ${FINDER_APP_DIR}/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/
+    cp ${FINDER_APP_DIR}/assignments/sysapps/busybox-1.33.1-arm64_defconfig ${OUTDIR}/sysapps/
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" all
     make -C ${OUTDIR}/sysapps OUTDIR="${OUTDIR}" install
    
