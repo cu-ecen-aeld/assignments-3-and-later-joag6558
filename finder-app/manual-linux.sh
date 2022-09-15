@@ -35,8 +35,8 @@ then
    echo "copying rootfs files "
 
    mkdir -p ${OUTDIR}/rootfs
-   mkdir -p ${OUTDIR}/rootfs/libc
-   mkdir -p ${OUTDIR}/rootfs/libc64
+   mkdir -p ${OUTDIR}/rootfs/lib
+   mkdir -p ${OUTDIR}/rootfs/lib64
    mkdir -p ${OUTDIR}/rootfs/scripts
    mkdir -p ${OUTDIR}/rootfs/assignments
    mkdir -p ${OUTDIR}/rootfs/assignments/conf
