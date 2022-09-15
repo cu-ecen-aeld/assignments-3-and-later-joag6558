@@ -46,8 +46,8 @@ then
    cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
    cp -r ${FINDER_APP_DIR}/assignments/conf/* ${OUTDIR}/rootfs/assignments/conf/
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
-   cp -a ${FINDER_APP_DIR}/assignments/libc/lib/*.so*  ${OUTDIR}/rootfs/lib/.
    cp -a ${FINDER_APP_DIR}/assignments/libc/lib64/*.so*  ${OUTDIR}/rootfs/lib64/.
+   cp -a ${FINDER_APP_DIR}/assignments/libc/lib/*.so*  ${OUTDIR}/rootfs/lib/.
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder-test.sh ${OUTDIR}/rootfs/assignments/
    cp -a ${FINDER_APP_DIR}/assignments/writer.txt ${OUTDIR}/rootfs/assignments/writer
