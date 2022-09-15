@@ -5,8 +5,24 @@
 #
 ##############################################################################
 
-include $(ECEA5305_PRJROOT)/build/kernel_compile.mk
+CROSS_COMPILER_PREFIX = aarch64-none-linux-gnu
 
+CROSS_COMPILE = $(CROSS_COMPILER_PREFIX)-
+export CROSS_COMPILE
+
+CC=$(CROSS_COMPILER_PREFIX)-gcc
+CXX=$(CROSS_COMPILER_PREFIX)-g++
+AR=$(CROSS_COMPILER_PREFIX)-ar
+AS=$(CROSS_COMPILER_PREFIX)-as
+LD=$(CROSS_COMPILER_PREFIX)-ld
+NM=$(CROSS_COMPILER_PREFIX)-nm
+OBJDUMP=$(CROSS_COMPILER_PREFIX)-objdump
+RANLIB=$(CROSS_COMPILER_PREFIX)-ranlib
+STRIP=$(CROSS_COMPILER_PREFIX)-strip
+
+CC := $(CC) 
+
+export CC CXX AR AS LD NM OBJDUMP RANLIB STRIP LDFLAGS
 
 ECEA5305_DEFCONFIG = linux-5.1.10-ecea5305_defconfig
 

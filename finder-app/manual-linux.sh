@@ -41,7 +41,6 @@ then
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
    cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
    cp -r ${FINDER_APP_DIR}/assignments/conf/* ${OUTDIR}/rootfs/assignments/conf/
-   cp -r ${FINDER_APP_DIR}/assignments/build/* ${OUTDIR}/rootfs/assignments/conf/
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder-test.sh ${OUTDIR}/rootfs/assignments/
