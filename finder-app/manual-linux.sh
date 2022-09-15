@@ -44,7 +44,7 @@ then
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder-test.sh ${OUTDIR}/rootfs/assignments/
-   cp -a ${FINDER_APP_DIR}/assignments/writer ${OUTDIR}/rootfs/assignments/writer
+   cp -a ${FINDER_APP_DIR}/assignments/writer.txt ${OUTDIR}/rootfs/assignments/writer
 
 
    make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
