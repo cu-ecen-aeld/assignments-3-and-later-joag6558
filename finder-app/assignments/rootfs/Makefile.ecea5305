@@ -5,10 +5,6 @@
 #
 ##############################################################################
 
-ifndef ECEA5305_PRJROOT
-    $(error You must first source the BSP environment: "source bsp-env")
-endif
-
 CURRDIR := $(shell echo "$$(pwd)")
 
 STAGE_DIR := stage

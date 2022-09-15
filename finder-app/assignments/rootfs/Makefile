@@ -5,11 +5,6 @@
 #
 ##############################################################################
 
-ifndef ECEA5305_PRJROOT
-    $(error You must first source the BSP environment: "source bsp-env")
-endif
-
-
 .PHONY: help
 help:
 	@echo  'Rootfs Targets:'
