@@ -41,8 +41,10 @@ then
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
    cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
    cp -r /__w/assignments-3-and-later-joag6558/assignments-3-and-later-joag6558/conf/* ${OUTDIR}/rootfs/assignments/conf/
-   cp -r ${FINDER_APP_DIR}/* ${OUTDIR}/rootfs/assignments/
-
+   cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
+   cp ${FINDER_APP_DIR}/fassignments/inder-test.sh ${OUTDIR}/rootfs/assignments/
+   cp -a ${FINDER_APP_DIR}/assignments/writer ${OUTDIR}/rootfs/assignments/writer
 
 
    make -C ${OUTDIR}/rootfs OUTDIR="${OUTDIR}" all
