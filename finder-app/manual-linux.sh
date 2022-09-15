@@ -27,21 +27,27 @@ mkdir -p ${OUTDIR}
 cd "$OUTDIR"
 
 echo "Making rootfs directory"
-mkdir -p ${OUTDIR}/rootfs
-mkdir -p ${OUTDIR}/rootfs/scripts
-mkdir -p ${OUTDIR}/rootfs/assignments
-mkdir -p ${OUTDIR}/rootfs/assignments/conf
+
 
 if [ ! -e "${OUTDIR}/rootfs/Makefile" ]
 then
 
    echo "copying rootfs files "
 
+   mkdir -p ${OUTDIR}/rootfs
+   mkdir -p ${OUTDIR}/rootfs/libc
+   mkdir -p ${OUTDIR}/rootfs/libc64
+   mkdir -p ${OUTDIR}/rootfs/scripts
+   mkdir -p ${OUTDIR}/rootfs/assignments
+   mkdir -p ${OUTDIR}/rootfs/assignments/conf
+
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile ${OUTDIR}/rootfs/
    cp ${FINDER_APP_DIR}/assignments/rootfs/Makefile.ecea5305 ${OUTDIR}/rootfs/
    cp -r ${FINDER_APP_DIR}/assignments/rootfs/scripts/* ${OUTDIR}/rootfs/scripts/
    cp -r ${FINDER_APP_DIR}/assignments/conf/* ${OUTDIR}/rootfs/assignments/conf/
    cp -r ${FINDER_APP_DIR}/assignments/autorun-qemu.sh ${OUTDIR}/rootfs/assignments/
+   cp -a ${FINDER_APP_DIR}/assignments/libc/lib/*.so*  ${OUTDIR}/rootfs/lib/.
+   cp -a ${FINDER_APP_DIR}/assignments/libc/lib64/*.so*  ${OUTDIR}/rootfs/lib64/.
    cp ${FINDER_APP_DIR}/assignments/finder.sh ${OUTDIR}/rootfs/assignments/
    cp ${FINDER_APP_DIR}/assignments/finder-test.sh ${OUTDIR}/rootfs/assignments/
    cp -a ${FINDER_APP_DIR}/assignments/writer.txt ${OUTDIR}/rootfs/assignments/writer

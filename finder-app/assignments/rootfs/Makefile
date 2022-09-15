@@ -57,7 +57,8 @@ $(runtimelibs): install-runtimelibs
 
 .PHONY: install-runtimelibs
 install-runtimelibs:
-	ECEA5305_PRJROOT="$(ECEA5305_PRJROOT)" scripts/install-runtimelibs.sh
+	cp -a $(OUTDIR)/rootfs/lib/*.so*  $(OUTDIR)/rootfs/fs/lib/.
+	cp -a $(OUTDIR)/rootfs/lib64/*.so*  $(OUTDIR)/rootfs/fs/lib64/.
 
 .PHONY: firmware
 firmware: rootfs
