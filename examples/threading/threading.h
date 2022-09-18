@@ -15,12 +15,19 @@ struct thread_data{
      * your thread implementation.
      */
 
+     pthread_t * thread;
+     pthread_mutex_t * mutex;
+     unsigned int wait_to_obtain_ms;
+     unsigned int wait_to_release_ms;
+     bool thread_exit;
     /**
      * Set to true if the thread completed with success, false
      * if an error occurred.
      */
     bool thread_complete_success;
+    struct thread_data *next;
 };
+
 
 
 /**
@@ -37,4 +44,7 @@ struct thread_data{
 * coresponding to the thread which was started.
 * @return true if the thread could be started, false if a failure occurred.
 */
+
 bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *mutex,int wait_to_obtain_ms, int wait_to_release_ms);
+
+
