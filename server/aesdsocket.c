@@ -34,7 +34,7 @@ void int_handler()
 {
 
   printf("\nsockets are being closed by Ctrl-c\n");
-
+remove("/var/tmp/aesdsocketdata");
   close(client_sock);
   close(server_sock);
 
@@ -47,7 +47,7 @@ void term_handler()
 {
     
   printf("\nsockets are being closed by kill signal\n");
-
+remove("/var/tmp/aesdsocketdata");
   close(client_sock);
   close(server_sock);
 
@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
   int len;
   int file_idx;
   int i;
+  int new_recv;
 
 
     int status;
@@ -123,7 +124,7 @@ int main(int argc, char *argv[])
   /* turn on zero linger time so that undelivered data is discarded when
      socket is closed
    */
-   /*
+   
   opt.l_onoff = 1;
   opt.l_linger = 0;
 
@@ -131,11 +132,10 @@ int main(int argc, char *argv[])
  
   setsockopt(server_sock, SOL_SOCKET, SO_LINGER, (char*) &opt, sizeof(opt));
   setsockopt(client_sock, SOL_SOCKET, SO_REUSEADDR, (char *)&sockarg, sizeof(int));
-  */
+  
   signal(SIGINT, int_handler);
   signal(SIGTERM, term_handler);
 
-  
   fp = fopen("/var/tmp/aesdsocketdata","w");
   
   if (argc > 1){
@@ -184,48 +184,61 @@ int main(int argc, char *argv[])
 	      exit(-1);
 	    }
 
-	    /* Clear client message buffer*/
-	    memset(client_message, 0, sizeof(client_message));
-	       // Receive client's message:
-	    if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
-		printf("Couldn't receive\n");
-		exit(-1);
-	    }
-	    /*printf("message: %s\n", client_message);*/
-	    printf("message length: %zu\n", strlen(client_message));
-	    len=strlen(client_message);
-	 
-	    fp = fopen("/var/tmp/aesdsocketdata","a+");
-	    for (i = 0; i < len; i++){
-		fputc(client_message[i], fp);
+	    do{
+           fp = fopen("/var/tmp/aesdsocketdata","a+");
+		    /* Clear client message buffer*/
+		    memset(client_message, 0, sizeof(client_message));
+		       // Receive client's message:
+		    new_recv= recv(client_sock, client_message, sizeof(client_message), 0);
+		    printf("new_recv: %d\n", new_recv);
+		    /*printf("message: %s\n", client_message);*/
+		    printf("message length: %zu\n", strlen(client_message));
+		    len=strlen(client_message);
+		 
+		    
+			    for (i = 0; i < len; i++){
+				fputc(client_message[i], fp);
 
-	    }
+			    }
+		    	    fclose(fp);
+
+
+		    			   /* Clear client message buffer*/
+			    memset(client_message, 0, sizeof(client_message));
+			    printf("readign from file...\n");
+			    fp = fopen("/var/tmp/aesdsocketdata","r");
+			    file_idx=0;
+
+				/* Reading the string from file*/
+			    while((c = fgetc(fp)) != EOF)
+			    {
+
+			       if(file_idx < sizeof(client_message)){
+				  client_message[file_idx]=c;
+				  /*putchar(c);*/
+				  file_idx++;
+			       }
+			    }
+
+			    fclose(fp);
+		    /*if( client_message[i-1] !='\n'){
+			client_message[i] ='\n';
+			fputc(client_message[i], fp);
+		    }*/
+		    if((new_recv > 0) && (new_recv < 40)){
+		    		    
+
+
+			    printf("sending number of bytes : %d\n", file_idx);
+			    send(client_sock, client_message, file_idx, 0);
+	           }
+	           else if(file_idx > 16424){
+
+	            printf("sending number of bytes : %d\n", file_idx);
+			    send(client_sock, client_message, file_idx, 0);
+	           }
 	    
-	    if( client_message[i-1] !='\n'){
-		client_message[i] ='\n';
-		fputc(client_message[i], fp);
-	    }
-		
-	    fclose(fp);
-		/* Clear client message buffer*/
-	    memset(client_message, 0, sizeof(client_message));
-	    printf("readign from file...\n");
-	    fp = fopen("/var/tmp/aesdsocketdata","r");
-	    file_idx=0;
-		/* Reading the string from file*/
-	    while((c = fgetc(fp)) != EOF)
-	    {
-
-	       if(file_idx < sizeof(client_message)){
-		  client_message[file_idx]=c;
-		  putchar(c);
-		  file_idx++;
-	       }
-	    }
-	   
-	    fclose(fp);
-	    printf("sending number of bytes : %d\n", file_idx);
-	    send(client_sock, client_message, file_idx, 0);
+	    }while(new_recv > 0);
 	    
 
 
@@ -255,48 +268,64 @@ int main(int argc, char *argv[])
 	      exit(-1);
 	    }
 
-	    /* Clear client message buffer*/
-	    memset(client_message, 0, sizeof(client_message));
-	       // Receive client's message:
-	    if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
-		printf("Couldn't receive\n");
-		exit(-1);
-	    }
-	    /*printf("message: %s\n", client_message);*/
-	    printf("message length: %zu\n", strlen(client_message));
-	    len=strlen(client_message);
-	 
-	    fp = fopen("/var/tmp/aesdsocketdata","a+");
-	    for (i = 0; i < len; i++){
-		fputc(client_message[i], fp);
+           
+           do{
+           fp = fopen("/var/tmp/aesdsocketdata","a+");
+		    /* Clear client message buffer*/
+		    memset(client_message, 0, sizeof(client_message));
+		       // Receive client's message:
+		    new_recv= recv(client_sock, client_message, sizeof(client_message), 0);
+		    printf("new_recv: %d\n", new_recv);
+		    /*printf("message: %s\n", client_message);*/
+		    printf("message length: %zu\n", strlen(client_message));
+		    len=strlen(client_message);
+		 
+		    
+			    for (i = 0; i < len; i++){
+				fputc(client_message[i], fp);
 
-	    }
+			    }
+		    	    fclose(fp);
+
+
+		    			   /* Clear client message buffer*/
+			    memset(client_message, 0, sizeof(client_message));
+			    printf("readign from file...\n");
+			    fp = fopen("/var/tmp/aesdsocketdata","r");
+			    file_idx=0;
+
+				/* Reading the string from file*/
+			    while((c = fgetc(fp)) != EOF)
+			    {
+
+			       if(file_idx < sizeof(client_message)){
+				  client_message[file_idx]=c;
+				  /*putchar(c);*/
+				  file_idx++;
+			       }
+			    }
+
+			    fclose(fp);
+		    /*if( client_message[i-1] !='\n'){
+			client_message[i] ='\n';
+			fputc(client_message[i], fp);
+		    }*/
+		    if((new_recv > 0) && (new_recv < 40)){
+		    		    
+
+
+			    printf("sending number of bytes : %d\n", file_idx);
+			    send(client_sock, client_message, file_idx, 0);
+	           }
+	           else if(file_idx > 16424){
+
+	            printf("sending number of bytes : %d\n", file_idx);
+			    send(client_sock, client_message, file_idx, 0);
+	           }
 	    
-	    if( client_message[i-1] !='\n'){
-		client_message[i] ='\n';
-		fputc(client_message[i], fp);
-	    }
-		
-	    fclose(fp);
-		/* Clear client message buffer*/
-	    memset(client_message, 0, sizeof(client_message));
-	    printf("readign from file...\n");
-	    fp = fopen("/var/tmp/aesdsocketdata","r");
-	    file_idx=0;
-		/* Reading the string from file*/
-	    while((c = fgetc(fp)) != EOF)
-	    {
+	    }while(new_recv > 0);
 
-	       if(file_idx < sizeof(client_message)){
-		  client_message[file_idx]=c;
-		  putchar(c);
-		  file_idx++;
-	       }
-	    }
-	   
-	    fclose(fp);
-	    printf("sending number of bytes : %d\n", file_idx);
-	    send(client_sock, client_message, file_idx, 0);
+
 	    
 
 
