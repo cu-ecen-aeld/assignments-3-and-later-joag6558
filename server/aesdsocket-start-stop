@@ -2,11 +2,11 @@
 
 case "$1" in
     start)
-        echo "Starting aesdsocket..."
+        echo "Starting aesdsocket"
         /usr/bin/aesdsocket -d
         ;;
     stop)
-        echo -n "Stopping aesdsocket..."
+        echo -n "Stopping aesdsocket"
         killall /usr/bin/aesdsocket
         ;;
     *)
