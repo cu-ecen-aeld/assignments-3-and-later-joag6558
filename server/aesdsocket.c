@@ -34,7 +34,7 @@ void int_handler()
 {
 
   printf("\nsockets are being closed by Ctrl-c\n");
-remove("/var/tmp/aesdsocketdata");
+remove("/tmp/aesdsocketdata");
   close(client_sock);
   close(server_sock);
 
@@ -47,7 +47,7 @@ void term_handler()
 {
     
   printf("\nsockets are being closed by kill signal\n");
-remove("/var/tmp/aesdsocketdata");
+remove("/tmp/aesdsocketdata");
   close(client_sock);
   close(server_sock);
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, int_handler);
   signal(SIGTERM, term_handler);
 
-  fp = fopen("/var/tmp/aesdsocketdata","w");
+  fp = fopen("/tmp/aesdsocketdata","w");
   
   if (argc > 1){
 	  if(strncmp("-d", argv[1], 2) == 0){
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 	    }
 
 	    do{
-           fp = fopen("/var/tmp/aesdsocketdata","a+");
+           fp = fopen("/tmp/aesdsocketdata","a+");
 		    /* Clear client message buffer*/
 		    memset(client_message, 0, sizeof(client_message));
 		       // Receive client's message:
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 		    			   /* Clear client message buffer*/
 			    memset(client_message, 0, sizeof(client_message));
 			    printf("readign from file...\n");
-			    fp = fopen("/var/tmp/aesdsocketdata","r");
+			    fp = fopen("/tmp/aesdsocketdata","r");
 			    file_idx=0;
 
 				/* Reading the string from file*/
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
 
            
            do{
-           fp = fopen("/var/tmp/aesdsocketdata","a+");
+           fp = fopen("/tmp/aesdsocketdata","a+");
 		    /* Clear client message buffer*/
 		    memset(client_message, 0, sizeof(client_message));
 		       // Receive client's message:
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 		    			   /* Clear client message buffer*/
 			    memset(client_message, 0, sizeof(client_message));
 			    printf("readign from file...\n");
-			    fp = fopen("/var/tmp/aesdsocketdata","r");
+			    fp = fopen("/tmp/aesdsocketdata","r");
 			    file_idx=0;
 
 				/* Reading the string from file*/
