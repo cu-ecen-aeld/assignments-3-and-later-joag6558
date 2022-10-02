@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     hints.ai_family = AF_INET; 
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
+    hints.ai_flags = 0;
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
-				  /*putchar(c);*/
+				  putchar(c);
 				  file_idx++;
 			       }
 			    }
@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
-				  /*putchar(c);*/
+				  putchar(c);
 				  file_idx++;
 			       }
 			    }
