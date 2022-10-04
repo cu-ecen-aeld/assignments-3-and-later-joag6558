@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
-				  putchar(c);
+				  /*putchar(c);*/
 				  file_idx++;
 			       }
 			    }
@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
-				  putchar(c);
+				  /*putchar(c);*/
 				  file_idx++;
 			       }
 			    }
