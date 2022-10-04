@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
     hints.ai_family = AF_INET; 
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = 0;
+    hints.ai_flags = AI_ALL;
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 
 		    			   /* Clear client message buffer*/
 			    memset(client_message, 0, sizeof(client_message));
-			    printf("readign from file...\n");
+			    printf("reading from file...\n");
 			    fp = fopen("/tmp/aesdsocketdata","r");
 			    file_idx=0;
 
@@ -290,7 +290,7 @@ int main(int argc, char *argv[])
 
 		    			   /* Clear client message buffer*/
 			    memset(client_message, 0, sizeof(client_message));
-			    printf("readign from file...\n");
+			    printf("reading from file...\n");
 			    fp = fopen("/tmp/aesdsocketdata","r");
 			    file_idx=0;
 
