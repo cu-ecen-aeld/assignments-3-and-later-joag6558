@@ -84,9 +84,10 @@ int main(int argc, char *argv[])
     
     memset(&hints, 0, sizeof(hints));
 
-    hints.ai_family = AF_INET; 
+    hints.ai_family = AF_UNSPEC; 
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_ALL;
+    printf("a5 p2 v9!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
