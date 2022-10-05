@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     hints.ai_family = AF_UNSPEC; 
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_ALL;
-    printf("a5 p2 v11!\n");
+    printf("a5 p2 v12!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   /* Set port number, using htons function to use proper byte order */
   server_sockaddr.sin_port = htons(SOCKET_PORT);
   /* Set IP address to localhost */
-  server_sockaddr.sin_addr.s_addr = INADDR_ANY;  //INADDR_ANY = 0.0.0.0
+  server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);//INADDR_ANY = 0.0.0.0
   /*bcopy (hp->h_addr, &server_sockaddr.sin_addr, hp->h_length);*/
 
   /*bind socket to the source WHERE THE PACKET IS COMING FROM*/
