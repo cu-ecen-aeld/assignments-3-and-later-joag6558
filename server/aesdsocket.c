@@ -13,7 +13,7 @@
 #include <linux/fs.h>
 
 
-#define SOCKET_PORT 9000
+#define SOCKET_PORT 1234
 
 static char client_message[100000];
 extern int errno;
@@ -27,7 +27,7 @@ static char c;
 static FILE *fp;
 static struct sockaddr_in server_sockaddr, client_sockaddr;
 static struct addrinfo *servinfo;
-static int new_recv;
+ 
 
 /* Close sockets after a Ctrl-C interrupt */
 void int_handler()
@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
   int len;
   int file_idx;
   int i;
+  int new_recv;
   
 
 
@@ -91,9 +92,9 @@ int main(int argc, char *argv[])
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
-    printf("a5 p2 v19!\n");
+    printf("a5 p2 v21!\n");
 
-    status = getaddrinfo(NULL, "9000", &hints, &servinfo);
+    status = getaddrinfo(NULL, "1234", &hints, &servinfo);
     if (status != 0)
     {
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
@@ -221,7 +222,7 @@ int main(int argc, char *argv[])
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
 				  /*putchar(c);*/
-				  printf("%c", c);
+				  /*printf("%c", c);*/
 				  file_idx++;
 			       }
 			    }
@@ -231,9 +232,7 @@ int main(int argc, char *argv[])
 			client_message[i] ='\n';
 			fputc(client_message[i], fp);
 		    }*/
-		    printf("sending number of bytes : %d\n", file_idx);
-		    send(client_sock, client_message, file_idx, 0);
-		    /*if((new_recv > 0) && (new_recv < 40)){
+		    if((new_recv > 0) && (new_recv < 40)){
 		    		    
 
 
@@ -244,7 +243,7 @@ int main(int argc, char *argv[])
 
 	            printf("sending number of bytes : %d\n", file_idx);
 			    send(client_sock, client_message, file_idx, 0);
-	           }*/
+	           }
 	    
 	    }while(new_recv > 0);
 	    
@@ -309,7 +308,7 @@ int main(int argc, char *argv[])
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
 				  /*putchar(c);*/
-				  printf("%c", c);
+				  /*printf("%c", c);*/
 				  file_idx++;
 			       }
 			    }
@@ -319,9 +318,7 @@ int main(int argc, char *argv[])
 			client_message[i] ='\n';
 			fputc(client_message[i], fp);
 		    }*/
-		    printf("sending number of bytes : %d\n", file_idx);
-		    send(client_sock, client_message, file_idx, 0);
-		    /*if((new_recv > 0) && (new_recv < 40)){
+		    if((new_recv > 0) && (new_recv < 40)){
 		    		    
 
 
@@ -332,7 +329,7 @@ int main(int argc, char *argv[])
 
 	            printf("sending number of bytes : %d\n", file_idx);
 			    send(client_sock, client_message, file_idx, 0);
-	           }*/
+	           }
 	    
 	    }while(new_recv > 0);
 
