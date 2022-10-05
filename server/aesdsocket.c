@@ -84,10 +84,14 @@ int main(int argc, char *argv[])
     
     memset(&hints, 0, sizeof(hints));
 
-    hints.ai_family = AF_UNSPEC; 
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_ALL;
-    printf("a5 p2 v13!\n");
+   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+   hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+   hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+   hints.ai_protocol = 0;          /* Any protocol */
+   hints.ai_canonname = NULL;
+   hints.ai_addr = NULL;
+   hints.ai_next = NULL;
+    printf("a5 p2 v14!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -97,7 +101,7 @@ int main(int argc, char *argv[])
     }
     
     /* creating the socket */ 
-  if((server_sock=socket(PF_INET6, SOCK_STREAM, 0)) < 0)
+  if((server_sock=socket(PF_INET, SOCK_STREAM, 0)) < 0)
   {
     perror("Failed to socket socket");
     exit(-1);
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
 
   bzero((char*) &server_sockaddr, sizeof(server_sockaddr));
   /* Address family = Internet */
-  server_sockaddr.sin_family = AF_INET6;
+  server_sockaddr.sin_family = AF_INET;
   /* Set port number, using htons function to use proper byte order */
   server_sockaddr.sin_port = htons(SOCKET_PORT);
   /* Set IP address to localhost */
