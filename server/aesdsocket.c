@@ -13,7 +13,7 @@
 #include <linux/fs.h>
 
 
-#define SOCKET_PORT 1234
+#define SOCKET_PORT 9000
 
 static char client_message[100000];
 extern int errno;
@@ -92,9 +92,9 @@ int main(int argc, char *argv[])
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
-    printf("a5 p2 v21!\n");
+    printf("a5 p2 v22!\n");
 
-    status = getaddrinfo(NULL, "1234", &hints, &servinfo);
+    status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
     {
         fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
