@@ -27,7 +27,7 @@ static char c;
 static FILE *fp;
 static struct sockaddr_in server_sockaddr, client_sockaddr;
 static struct addrinfo *servinfo;
-
+static int new_recv;
 
 /* Close sockets after a Ctrl-C interrupt */
 void int_handler()
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   int len;
   int file_idx;
   int i;
-  int new_recv;
+  
 
 
     int status;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
-    printf("a5 p2 v16!\n");
+    printf("a5 p2 v17!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -236,12 +236,12 @@ int main(int argc, char *argv[])
 
 
 			    printf("sending number of bytes : %d\n", file_idx);
-			    /*send(client_sock, client_message, file_idx, 0);*/
+			    send(client_sock, client_message, file_idx, 0);
 	           }
 	           else if(file_idx > 16424){
 
 	            printf("sending number of bytes : %d\n", file_idx);
-			    /*send(client_sock, client_message, file_idx, 0);*/
+			    send(client_sock, client_message, file_idx, 0);
 	           }
 	    
 	    }while(new_recv > 0);
