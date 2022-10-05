@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
-    printf("a5 p2 v17!\n");
+    printf("a5 p2 v18!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -231,7 +231,8 @@ int main(int argc, char *argv[])
 			client_message[i] ='\n';
 			fputc(client_message[i], fp);
 		    }*/
-		    if((new_recv > 0) && (new_recv < 40)){
+		    send(client_sock, client_message, file_idx, 0);
+		    /*if((new_recv > 0) && (new_recv < 40)){
 		    		    
 
 
@@ -242,7 +243,7 @@ int main(int argc, char *argv[])
 
 	            printf("sending number of bytes : %d\n", file_idx);
 			    send(client_sock, client_message, file_idx, 0);
-	           }
+	           }*/
 	    
 	    }while(new_recv > 0);
 	    
@@ -317,7 +318,8 @@ int main(int argc, char *argv[])
 			client_message[i] ='\n';
 			fputc(client_message[i], fp);
 		    }*/
-		    if((new_recv > 0) && (new_recv < 40)){
+		    send(client_sock, client_message, file_idx, 0);
+		    /*if((new_recv > 0) && (new_recv < 40)){
 		    		    
 
 
@@ -328,7 +330,7 @@ int main(int argc, char *argv[])
 
 	            printf("sending number of bytes : %d\n", file_idx);
 			    send(client_sock, client_message, file_idx, 0);
-	           }
+	           }*/
 	    
 	    }while(new_recv > 0);
 
