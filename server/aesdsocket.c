@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
-    printf("a5 p2 v24!\n");
+    printf("a5 p2 v25!\n");
 
     status = getaddrinfo(NULL, "9000", &hints, &servinfo);
     if (status != 0)
@@ -192,28 +192,29 @@ int main(int argc, char *argv[])
 
 	    do{
            fp = fopen("/tmp/aesdsocketdata","a+");
-
+		    /* Clear client message buffer*/
 		    memset(client_message, 0, sizeof(client_message));
+		       // Receive client's message:
 		    new_recv= recv(client_sock, client_message, sizeof(client_message), 0);
-		    len=strlen(client_message);
-		 
+
 		    
-			    for (i = 0; i < len; i++){
+			    for (i = 0; i < new_recv; i++){
 				fputc(client_message[i], fp);
 
 			    }
+			    
 		    	    fclose(fp);
-
-			    /*memset(client_message, 0, sizeof(client_message));*/
-
 			    fp = fopen("/tmp/aesdsocketdata","r");
+			    
 			    file_idx=0;
 
+				/* Reading the string from file*/
 			    while((c = fgetc(fp)) != EOF)
 			    {
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
+
 				  file_idx++;
 			       }
 			    }
@@ -222,6 +223,7 @@ int main(int argc, char *argv[])
 
 		    if((new_recv > 0) && (new_recv < 40)){
 		    		    
+
 			    send(client_sock, client_message, file_idx, 0);
 	           }
 	           else if(file_idx > 16424){
@@ -262,18 +264,18 @@ int main(int argc, char *argv[])
            
            do{
            fp = fopen("/tmp/aesdsocketdata","a+");
+		    /* Clear client message buffer*/
 		    memset(client_message, 0, sizeof(client_message));
+		       // Receive client's message:
 		    new_recv= recv(client_sock, client_message, sizeof(client_message), 0);
-		    len=strlen(client_message);
 		 
 		    
-			    for (i = 0; i < len; i++){
+			    for (i = 0; i < new_recv; i++){
 				fputc(client_message[i], fp);
 
 			    }
-		    	    fclose(fp);
 
-			    /*memset(client_message, 0, sizeof(client_message));*/
+		    	    fclose(fp);
 			    fp = fopen("/tmp/aesdsocketdata","r");
 			    file_idx=0;
 
@@ -282,6 +284,7 @@ int main(int argc, char *argv[])
 
 			       if(file_idx < sizeof(client_message)){
 				  client_message[file_idx]=c;
+
 				  file_idx++;
 			       }
 			    }
