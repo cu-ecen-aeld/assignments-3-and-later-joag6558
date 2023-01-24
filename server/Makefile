@@ -14,8 +14,8 @@ LDFLAGS =
 
 CFLAGS = -g #-Wall -Werror 
 
-LIBS = -lm -lpthread
-#LIBS = -lpthread
+#LIBS = -lm -lpthread -lrt
+LIBS = -pthread -lrt
 
 .PHONY: all
 all: $(TARGET)
