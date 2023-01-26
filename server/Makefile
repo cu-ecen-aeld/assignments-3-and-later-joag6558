@@ -4,18 +4,20 @@
 #
 ##############################################################################
 
-TARGET = aesdsocket
+TARGET ?= aesdsocket
 
-OBJECTS = aesdsocket.o
+OBJECTS ?= aesdsocket.o
 
-INCLUDES = -I.
+INCLUDES ?= -I.
 
-LDFLAGS =
+LDFLAGS ?=
 
-CFLAGS = -g #-Wall -Werror 
+CFLAGS ?= -g #-Wall -Werror 
 
-#LIBS = -lm -lpthread -lrt
-LIBS = -pthread -lrt
+LIBS ?= -lm -lpthread -lrt
+#LIBS = -pthread -lrt
+
+CC ?= $(CROSS_COMPILE)gcc
 
 .PHONY: all
 all: $(TARGET)
