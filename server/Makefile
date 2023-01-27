@@ -14,8 +14,8 @@ LDFLAGS ?=
 
 CFLAGS ?= -g #-Wall -Werror 
 
-LIBS ?= -lm -lpthread -lrt
-#LIBS = -pthread -lrt
+#LIBS ?= -lm -lpthread -lrt
+LIBS ?= -pthread -lrt
 
 CC ?= $(CROSS_COMPILE)gcc
 
