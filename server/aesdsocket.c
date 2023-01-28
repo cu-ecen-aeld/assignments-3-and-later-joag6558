@@ -77,7 +77,7 @@ remove("/var/tmp/aesdsocketdata");
 
         datap = SLIST_FIRST(&head);
 
-	          	printf("\nsuccess!!!\n");
+	//printf("\nsuccess!!!\n");
 	close(datap->client_sock); 
 	SLIST_REMOVE_HEAD(&head, entries);
 	free(datap);
@@ -85,7 +85,7 @@ remove("/var/tmp/aesdsocketdata");
 
     }
 
-  exit(0);
+  return 0;
 
 }
 
@@ -103,7 +103,7 @@ remove("/var/tmp/aesdsocketdata");
 
         datap = SLIST_FIRST(&head);
 
-	printf("\nsuccess!!!\n");
+	//printf("\nsuccess!!!\n");
 	close(datap->client_sock);
 	           
 	//pthread_join(datap->thread, NULL);
@@ -114,7 +114,7 @@ remove("/var/tmp/aesdsocketdata");
 
     }
 
-  exit(0);
+  return 0;
 
 }
 
@@ -186,7 +186,7 @@ void* threadfunc(void* thread_param)
 	
 	thread_func_args->thread_complete_success = true;
 
-	pthread_exit(0);
+	return 0;
     
 }
 
