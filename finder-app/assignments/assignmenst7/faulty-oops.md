@@ -34,13 +34,13 @@
 
 [   70.697946] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
 
-**using aarch64-buildroot-linux-uclibc-objdump -DS faulty.ko**, 
+`**using aarch64-buildroot-linux-uclibc-objdump -DS faulty.ko**, 
 
 in faulty_write, zero is moved into **x1** and
 
 the **store** of the value into the **x1** register that was previously set with zero, 
 
-causes a null pointer exception.
+causes a null pointer exception.`
 
 
 Disassembly of section .text:
