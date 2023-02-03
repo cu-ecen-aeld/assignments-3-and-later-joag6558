@@ -55,7 +55,7 @@ Disassembly of section .text:
   10:	d50323bf 	autiasp
 ```diff  
 `  14:	b900003f 	str	wzr, [x1]`
-```diff
+```
   18:	d65f03c0 	ret
   
   1c:	d503201f 	nop
