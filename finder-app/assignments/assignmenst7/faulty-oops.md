@@ -34,13 +34,13 @@
 
 [   70.697946] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
 
-## **using aarch64-buildroot-linux-uclibc-objdump -DS faulty.ko**, 
+**using aarch64-buildroot-linux-uclibc-objdump -DS faulty.ko**, 
 
-## in faulty_write, zero is moved into **x1** and
+in faulty_write, zero is moved into **x1** and
 
-## the **store** of the value into the **x1** register that was previously set with zero, 
+the **store** of the value into the **x1** register that was previously set with zero, 
 
-##causes a null pointer exception.
+causes a null pointer exception.
 
 
 Disassembly of section .text:
@@ -50,7 +50,7 @@ Disassembly of section .text:
 
    0:	d503245f 	bti	c
 ```diff   
-## - `   4:	d2800001 	mov	x1, #0x0                   	// #0`
+- ##`   4:	d2800001 	mov	x1, #0x0                   	// #0`
 ```
    8:	d2800000 	mov	x0, #0x0                   	// #0
    
@@ -58,7 +58,7 @@ Disassembly of section .text:
    
   10:	d50323bf 	autiasp
 ```diff  
-## - `  14:	b900003f 	str	wzr, [x1]`
+- ##`  14:	b900003f 	str	wzr, [x1]`
 ```
   18:	d65f03c0 	ret
   
@@ -102,7 +102,7 @@ Disassembly of section .text:
 
 [   70.704565] Call trace:
 ```diff
-## - `[   70.704862]  faulty_write+0x14/0x20 [faulty]`
+- ##`[   70.704862]  faulty_write+0x14/0x20 [faulty]`
 ```
 [   70.705105]  ksys_write+0x68/0x100
 
