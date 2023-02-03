@@ -54,7 +54,7 @@ Disassembly of section .text:
    
   10:	d50323bf 	autiasp
 ```diff  
-`  14:	b900003f 	str	wzr, [x1]`
+- `  14:	b900003f 	str	wzr, [x1]`
 ```
   18:	d65f03c0 	ret
   
@@ -98,7 +98,7 @@ Disassembly of section .text:
 
 [   70.704565] Call trace:
 ```diff
-`[   70.704862]  faulty_write+0x14/0x20 [faulty]`
+- `[   70.704862]  faulty_write+0x14/0x20 [faulty]`
 ```
 [   70.705105]  ksys_write+0x68/0x100
 
