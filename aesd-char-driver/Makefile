@@ -1,34 +1,30 @@
-##############################################################################
-#
-# Socket server Makefile
-#
-##############################################################################
+# See example Makefile from scull project
+# Comment/uncomment the following line to disable/enable debugging
+#DEBUG = y
 
-TARGET ?= aesd-circular-buffer
+# Add your debugging flag (or not) to CFLAGS
+ifeq ($(DEBUG),y)
+  DEBFLAGS = -O -g -DSCULL_DEBUG # "-O" is needed to expand inlines
+else
+  DEBFLAGS = -O2
+endif
 
-OBJECTS ?= aesd-circular-buffer.o
+EXTRA_CFLAGS += $(DEBFLAGS)
 
-INCLUDES ?= -I.
+ifneq ($(KERNELRELEASE),)
+# call from kernel build system
+obj-m	:= aesdchar.o
+aesdchar-y := aesd-circular-buffer.o main.o
+else
 
-LDFLAGS ?=
+KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+PWD       := $(shell pwd)
 
-CFLAGS ?= -g -Wall -Werror 
+modules:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
 
-#LIBS ?= -lm -lpthread -lrt
-LIBS ?= -pthread -lrt
+endif
 
-CC ?= $(CROSS_COMPILE)gcc
+clean:
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
 
-.PHONY: all
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $(LIBS) -o $(TARGET) $(OBJECTS)
-
-aesd-circular-buffer.o: aesd-circular-buffer.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c aesd-circular-buffer.c
-
-.PHONY: clean distclean mrproper
-clean distclean mrproper:
-	-rm -f *.o
-	-rm -f $(TARGET)
