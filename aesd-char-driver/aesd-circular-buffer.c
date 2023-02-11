@@ -13,28 +13,23 @@
 #else
 #include <string.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <strings.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <linux/fs.h>
-#include <time.h>
-#include <stdio.h>
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/init.h>
 
-#include "aesd-circular-buffer.h"
-#define _GNU_SOURCE // use the gnu extension so we have pthread_tryjoin_mp available
-#include <pthread.h>
-#include <semaphore.h>
-#include <stdbool.h>
-#include <errno.h>
+#include <linux/kernel.h>	/* printk() */
+#include <linux/slab.h>		/* kmalloc() */
+#include <linux/fs.h>		/* everything... */
+#include <linux/errno.h>	/* error codes */
+#include <linux/types.h>	/* size_t */
+#include <linux/proc_fs.h>
+#include <linux/fcntl.h>	/* O_ACCMODE */
+#include <linux/seq_file.h>
+#include <linux/cdev.h>
+
+#include <linux/uaccess.h>	/* copy_*_user */
+
+#include "aesd-circular-buffer.h"		/* local definitions */
 
 //pthread_mutex_t cb_mutex = PTHREAD_MUTEX_INITIALIZER;
 // Semaphore variables
@@ -57,14 +52,16 @@ struct aesd_buffer_entry *aesd_circular_buffer_find_entry_offset_for_fpos(struct
     /**
     * TODO: implement per description
     */
+    int index;
+int data_index;
 
 struct aesd_buffer_entry *rtnentry;
 size_t char_offset_tmp=0;
 
-	for(int index=0; index < buffer->in_offs; index++){
+	for(index=0; index < buffer->in_offs; index++){
                 *entry_offset_byte_rtn = index;
                 rtnentry=&(buffer->entry[index]);
-		for(int data_index=0; data_index < buffer->entry[index].size; data_index++){
+		for(data_index=0; data_index < buffer->entry[index].size; data_index++){
 			  //printf("entry: %c\n", *(entryptr->buffptr++));
 			if(char_offset_tmp++ == char_offset){
 				return rtnentry;
