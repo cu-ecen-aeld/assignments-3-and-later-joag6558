@@ -96,24 +96,31 @@ int i;
 
 int aesd_release(struct inode *inode, struct file *filp)
 {
+int i;
     struct aesd_dev *dev = filp->private_data;
     
     PDEBUG("release");
     /**
      * TODO: handle release
      */
-     	
+     mutex_lock(&dev->lock);
+	for (i = 0; i < AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED; i++) { /* all the list items */
+
+		kfree(dev->entry[i].buffptr);
+	}  
+	mutex_unlock(&dev->lock);   	
 	
     return 0;
 }
 
+static char read_message[1000];
 ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
                 loff_t *f_pos)
 {
 	int i,j;
 	int idx;
-	char read_message[1000];
-	uint8_t offs;
+	
+	//uint8_t offs;
 	struct aesd_buffer_entry *rtnentry;
     //ssize_t retval = 0;
     PDEBUG("read %zu bytes with offset %lld",count,*f_pos);

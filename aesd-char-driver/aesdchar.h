@@ -54,9 +54,9 @@ struct aesd_dev {
     bool full;
     
         wait_queue_head_t inq, outq;       /* read and write queues */
-        //char *buffer, *end;                /* begin of buf, end of buf */
-        //int buffersize;                    /* used in pointer arithmetic */
-        //char *rp, *wp;                     /* where to read, where to write */
+        char *buffer, *end;                /* begin of buf, end of buf */
+        int buffersize;                    /* used in pointer arithmetic */
+        char *rp, *wp;                     /* where to read, where to write */
         int nreaders, nwriters;            /* number of openings for r/w */
         struct mutex lock;              /* mutual exclusion mutex */
         struct cdev cdev;                  /* Char device structure */
