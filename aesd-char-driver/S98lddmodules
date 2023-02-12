@@ -1,0 +1,40 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "loading devices..."
+	for i in /lib/modules/5.15.18/extra/*.ko
+	do
+	module="${i##*/}"
+	    case "$module" in
+		aesdchar.ko)
+		module="${module%.*}"
+		    /etc/init.d/aesdchar_load $module
+		    ;;
+		*)
+		    ;;
+	    esac
+	done
+        ;;
+    stop)
+        echo "unloading devices..."
+	for i in /lib/modules/5.15.18/extra/*.ko
+	do
+	module="${i##*/}"
+	    case "$module" in
+		aesdchar.ko)
+		module="${module%.*}"
+		    /etc/init.d/aesdchar_unload $module
+		    ;;
+		*)
+		    ;;
+	    esac
+	done
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit $?

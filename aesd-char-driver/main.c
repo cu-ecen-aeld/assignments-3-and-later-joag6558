@@ -35,7 +35,7 @@
 #include <linux/sched/signal.h>
 #include <linux/seq_file.h>
 
-
+#define AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED 10
 
 int aesd_major =   0; // use dynamic major
 int aesd_minor =   0;
@@ -51,8 +51,6 @@ static int spacefree(struct aesd_dev *dev);
 
 int aesd_open(struct inode *inode, struct file *filp)
 {
-int i;
-
     PDEBUG("open");
     /**
      * TODO: handle open
@@ -65,23 +63,19 @@ int i;
 
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
-	
-			
-	for(i=0; i < AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED; i++){
-		if (!dev->entry[i].buffptr) {
-			/* allocate the buffer */
-			dev->entry[i].buffptr = kmalloc(aesd_p_buffer, GFP_KERNEL);
-			if (!dev->entry[i].buffptr) {
-				mutex_unlock(&dev->lock);
-				return -ENOMEM;
-			}
+	if (!dev->buffer) {
+		/* allocate the buffer */
+		dev->buffer = kmalloc(aesd_p_buffer, GFP_KERNEL);
+		if (!dev->buffer) {
+			mutex_unlock(&dev->lock);
+			return -ENOMEM;
 		}
-
+			
+		dev->buffersize = aesd_p_buffer;
+		dev->end = dev->buffer + dev->buffersize;
+		dev->rp = dev->wp = dev->buffer; /* rd and wr from the beginning */
 	}
 
-	dev->full = false;
-	dev->in_offs = 0;//wrap
-	dev->out_offs = 0; 
 
 	/* use f_mode,not  f_flags: it's cleaner (fs/open.c tells why) */
 	if (filp->f_mode & FMODE_READ)
@@ -96,32 +90,25 @@ int i;
 
 int aesd_release(struct inode *inode, struct file *filp)
 {
-int i;
     struct aesd_dev *dev = filp->private_data;
     
     PDEBUG("release");
     /**
      * TODO: handle release
      */
-     mutex_lock(&dev->lock);
-	for (i = 0; i < AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED; i++) { /* all the list items */
+     	/*
+	mutex_lock(&dev->lock);
 
-		kfree(dev->entry[i].buffptr);
-	}  
-	mutex_unlock(&dev->lock);   	
+		kfree(dev->buffer);
+		dev->buffer = NULL;*/ /* the other fields are not checked on open */
+	/*mutex_unlock(&dev->lock);*/
 	
     return 0;
 }
 
-static char read_message[1000];
 ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
                 loff_t *f_pos)
 {
-	int i,j;
-	int idx;
-	
-	//uint8_t offs;
-	struct aesd_buffer_entry *rtnentry;
     //ssize_t retval = 0;
     PDEBUG("read %zu bytes with offset %lld",count,*f_pos);
     /**
@@ -132,26 +119,29 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 
-    /* Clear client message buffer*/
-    memset(read_message, 0, sizeof(read_message));
-	idx=0;
-		
-		
-	for(i=0; i < AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED; i++){
-  		rtnentry=&(dev->entry[i]);
-		for(j=0; j < dev->entry[i].size; j++){
-			read_message[idx++]=*(rtnentry->buffptr++);
-
-		}
-
-	}	
-	if (copy_to_user(buf, read_message, idx)) {
+	while (dev->rp == dev->wp) { /* nothing to read */
+		mutex_unlock(&dev->lock); /* release the lock */
+		if (filp->f_flags & O_NONBLOCK)
+			return -EAGAIN;
+		PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
+		if (wait_event_interruptible(dev->inq, (dev->rp != dev->wp)))
+			return -ERESTARTSYS; /* signal: tell the fs layer to handle it */
+		/* otherwise loop, but first reacquire the lock */
+		if (mutex_lock_interruptible(&dev->lock))
+			return -ERESTARTSYS;
+	}
+	/* ok, data is there, return something */
+	if (dev->wp > dev->rp)
+		count = min(count, (size_t)(dev->wp - dev->rp));
+	else /* the write pointer has wrapped, return data up to dev->end */
+		count = min(count, (size_t)(dev->end - dev->rp));
+	if (copy_to_user(buf, dev->rp, count)) {
 		mutex_unlock (&dev->lock);
 		return -EFAULT;
 	}
-	
-	idx = count;
-	
+	dev->rp += count;
+	if (dev->rp == dev->end)
+		dev->rp = dev->buffer; /* wrapped */
 	mutex_unlock (&dev->lock);
 
 	/* finally, awake any writers and return */
@@ -160,13 +150,40 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 	return count;
     //return retval;
 }
-	
 
+/* Wait for space for writing; caller must hold device semaphore.  On
+ * error the semaphore will be released before returning. */
+static int aesd_getwritespace(struct aesd_dev *dev, struct file *filp)
+{
+	while (spacefree(dev) == 0) { /* full */
+		DEFINE_WAIT(wait);
+		
+		mutex_unlock(&dev->lock);
+		if (filp->f_flags & O_NONBLOCK)
+			return -EAGAIN;
+		PDEBUG("\"%s\" writing: going to sleep\n",current->comm);
+		prepare_to_wait(&dev->outq, &wait, TASK_INTERRUPTIBLE);
+		if (spacefree(dev) == 0)
+			schedule();
+		finish_wait(&dev->outq, &wait);
+		if (signal_pending(current))
+			return -ERESTARTSYS; /* signal: tell the fs layer to handle it */
+		if (mutex_lock_interruptible(&dev->lock))
+			return -ERESTARTSYS;
+	}
+	return 0;
+}	
 
+/* How much space is free? */
+static int spacefree(struct aesd_dev *dev)
+{
+	if (dev->rp == dev->wp)
+		return dev->buffersize - 1;
+	return ((dev->rp + dev->buffersize - dev->wp) % dev->buffersize) - 1;
+}
 ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
                 loff_t *f_pos)
 {
-int i;
     //ssize_t retval = -ENOMEM;
     //PDEBUG("write %zu bytes with offset %lld",count,*f_pos);
     /**
@@ -177,30 +194,26 @@ int i;
 
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
-	
-	
-	// check buffer full
-	if( &(dev->entry[dev->in_offs]) >= &(dev->entry[AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED]) ){
-		dev->full = true;
-		dev->in_offs = 0;//wrap
-		dev->out_offs = 0; 
-	}
-	
-	if (copy_from_user(dev->entry[dev->in_offs].buffptr, buf, count)) {
+
+	/* Make sure there's space to write */
+	result = aesd_getwritespace(dev, filp);
+	if (result)
+		return result; /* aesd_getwritespace called up(&dev->sem) */
+
+	/* ok, space is there, accept something */
+	count = min(count, (size_t)spacefree(dev));
+	if (dev->wp >= dev->rp)
+		count = min(count, (size_t)(dev->end - dev->wp)); /* to end-of-buf */
+	else /* the write pointer has wrapped, fill up to rp-1 */
+		count = min(count, (size_t)(dev->rp - dev->wp - 1));
+	PDEBUG("Going to accept %li bytes to %p from %p\n", (long)count, dev->wp, buf);
+	if (copy_from_user(dev->wp, buf, count)) {
 		mutex_unlock(&dev->lock);
 		return -EFAULT;
 	}
-	
-	//advances buffer->out_offs to the new start location
-	if(dev->full){
-		dev->out_offs = dev->in_offs;
-	}
-	
-	dev->entry[dev->in_offs].size = count;
-		
-	// one more string in buffer
-	dev->in_offs++;
-
+	dev->wp += count;
+	if (dev->wp == dev->end)
+		dev->wp = dev->buffer; /* wrapped */
 	mutex_unlock(&dev->lock);
 
 	/* finally, awake any reader */

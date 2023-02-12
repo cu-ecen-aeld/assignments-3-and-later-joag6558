@@ -68,7 +68,7 @@ void int_handler()
 {
 
   printf("\nsockets are being closed by Ctrl-c\n");
-remove("/var/tmp/aesdsocketdata");
+remove("/dev/aesdchar");
   /*close(client_sock);
   close(server_sock);*/
   close(server_sock);
@@ -94,7 +94,7 @@ void term_handler()
 {
     
   printf("\nsockets are being closed by kill signal\n");
-remove("/var/tmp/aesdsocketdata");
+remove("/dev/aesdchar");
   /*close(client_sock);
   close(server_sock);*/
   close(server_sock);
@@ -173,7 +173,7 @@ void* threadfunc(void* thread_param)
 
 	}
 	
-	fp = fopen("/var/tmp/aesdsocketdata","a+");
+	fp = fopen("/dev/aesdchar","a+");
 
 	for (i = 0; i < file_idx; i++){
 		fputc(client_message[i], fp);
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
 	signal(SIGINT, int_handler);
 	signal(SIGTERM, term_handler);
 
-	fp = fopen("/var/tmp/aesdsocketdata","w");
+	fp = fopen("/dev/aesdchar","w");
 	file_idx=0;
 
 	if (argc > 1){
