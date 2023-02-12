@@ -2,7 +2,7 @@
 
 case "$1" in
     start)
-        echo "loading devices..."
+        echo "loading aesdchar device..."
 	for i in /lib/modules/5.15.18/extra/*.ko
 	do
 	module="${i##*/}"
@@ -17,7 +17,7 @@ case "$1" in
 	done
         ;;
     stop)
-        echo "unloading devices..."
+        echo "unloading aesdchar device..."
 	for i in /lib/modules/5.15.18/extra/*.ko
 	do
 	module="${i##*/}"
