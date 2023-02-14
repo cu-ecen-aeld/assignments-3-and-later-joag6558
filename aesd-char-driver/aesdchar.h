@@ -30,15 +30,20 @@ struct aesd_buffer_entry
     /**
      * A location where the buffer contents in buffptr are stored
      */
-     char *buffptr;
+    const char *buffptr;
     /**
      * Number of bytes stored in buffptr
      */
     size_t size;
 };
 struct aesd_dev {
-	struct aesd_buffer_entry  entry[AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED];
-	    /**
+
+        wait_queue_head_t inq, outq;       /* read and write queues */
+            /**
+     * An array of pointers to memory allocated for the most recent write operations
+     */
+    struct aesd_buffer_entry  entry[AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED];
+    /**
      * The current location in the entry structure where the next write should
      * be stored.
      */
@@ -47,13 +52,11 @@ struct aesd_dev {
      * The first location in the entry structure to read from
      */
     uint8_t out_offs;
-    
-        /**
+    /**
      * set to true when the buffer entry structure is full
      */
     bool full;
     
-        wait_queue_head_t inq, outq;       /* read and write queues */
         char *buffer, *end;                /* begin of buf, end of buf */
         int buffersize;                    /* used in pointer arithmetic */
         char *rp, *wp;                     /* where to read, where to write */
