@@ -37,28 +37,28 @@
 
 struct aesd_buffer_entry
 {
-    /**
-     * A location where the buffer contents in buffptr are stored
-     */
-    char *buffptr;
-    /**
-     * Number of bytes stored in buffptr
-     */
-    size_t size;
+	/**
+	 * A location where the buffer contents in buffptr are stored
+	 */
+	char *buffptr;
+	/**
+	 * Number of bytes stored in buffptr
+	 */
+	size_t size;
 };
 #define AESDCHAR_MAX 1000
 
 
 struct aesd_dev {
-        wait_queue_head_t inq, outq;       /* read and write queues */
-       struct aesd_buffer_entry  entry[AESDCHAR_MAX]; 
-        char *buffer, *end;                /* begin of buf, end of buf */
-        int buffersize;                    /* used in pointer arithmetic */
-        char *rp, *wp;                     /* where to read, where to write */
-        int nreaders, nwriters;            /* number of openings for r/w */
-        struct fasync_struct *async_queue; /* asynchronous readers */
-        struct mutex lock;              /* mutual exclusion mutex */
-        struct cdev cdev;                  /* Char device structure */
+	wait_queue_head_t inq, outq;       /* read and write queues */
+	struct aesd_buffer_entry  entry[AESDCHAR_MAX]; 
+	char *buffer, *end;                /* begin of buf, end of buf */
+	int buffersize;                    /* used in pointer arithmetic */
+	char *rp, *wp;                     /* where to read, where to write */
+	int nreaders, nwriters;            /* number of openings for r/w */
+	struct fasync_struct *async_queue; /* asynchronous readers */
+	struct mutex lock;              /* mutual exclusion mutex */
+	struct cdev cdev;                  /* Char device structure */
 };
 
 int aesd_major =   0; // use dynamic major
@@ -76,36 +76,36 @@ static int spacefree(struct aesd_dev *dev);
 
 int aesd_open(struct inode *inode, struct file *filp)
 {
-int i;
-    PDEBUG("open");
-    /**
-     * TODO: handle open
-     */
+	int i;
+	PDEBUG("open");
+	/**
+	 * TODO: handle open
+	 */
 	struct aesd_dev *dev;
 
 
-//printk(KERN_ALERT "max number of commands %d\n", aesd_p_buffer);
+	//printk(KERN_ALERT "max number of commands %d\n", aesd_p_buffer);
 	dev = container_of(inode->i_cdev, struct aesd_dev, cdev);
 	filp->private_data = dev;
 
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 	if (!dev->buffer) {
-	PDEBUG("   Buffer befor kmalloc: %p\n", dev->buffer);
+		//PDEBUG("   Buffer befor kmalloc: %p\n", dev->buffer);
 		/* allocate the buffer */
 		dev->buffer = kmalloc(aesd_p_buffer, GFP_KERNEL);
 		if (!dev->buffer) {
 			mutex_unlock(&dev->lock);
 			return -ENOMEM;
 		}
-		
+
 		memset(dev->buffer,0,aesd_p_buffer);
-			
+
 		dev->buffersize = aesd_p_buffer;
 		dev->end = dev->buffer + dev->buffersize;
 		dev->rp = dev->wp = dev->buffer; /* rd and wr from the beginning */
 	}
-	
+
 	for(i=0; i < AESDCHAR_MAX; i++){
 		if (!dev->entry[i].buffptr) {
 			/* allocate the buffer */
@@ -118,10 +118,10 @@ int i;
 		}
 	}
 
-		PDEBUG("Device: %p\n",dev);
-/*		seq_printf(s, "   Queues: %p %p\n", p->inq, p->outq);*/
-		PDEBUG("   Buffer: %p to %p (%i bytes)\n", dev->buffer, dev->end, dev->buffersize);
-		PDEBUG("   rp %p   wp %p\n", dev->rp, dev->wp);
+	//PDEBUG("Device: %p\n",dev);
+	/*		seq_printf(s, "   Queues: %p %p\n", p->inq, p->outq);*/
+	//PDEBUG("   Buffer: %p to %p (%i bytes)\n", dev->buffer, dev->end, dev->buffersize);
+	//PDEBUG("   rp %p   wp %p\n", dev->rp, dev->wp);
 	/* use f_mode,not  f_flags: it's cleaner (fs/open.c tells why) */
 	if (filp->f_mode & FMODE_READ)
 		dev->nreaders++;
@@ -135,37 +135,39 @@ int i;
 
 int aesd_release(struct inode *inode, struct file *filp)
 {
-    struct aesd_dev *dev = filp->private_data;
-    
-    PDEBUG("release");
-    /**
-     * TODO: handle release
-     */
-     	/*
-	mutex_lock(&dev->lock);
+	struct aesd_dev *dev = filp->private_data;
 
-		kfree(dev->buffer);
-		dev->buffer = NULL;*/ /* the other fields are not checked on open */
+	PDEBUG("release");
+	/**
+	 * TODO: handle release
+	 */
+	/*
+	   mutex_lock(&dev->lock);
+
+	   kfree(dev->buffer);
+	   dev->buffer = NULL;*/ /* the other fields are not checked on open */
 	/*mutex_unlock(&dev->lock);*/
-	
-    return 0;
+
+	return 0;
 }
 
 ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
-                loff_t *f_pos)
+		loff_t *f_pos)
 {
-int i=0;
-int size=0;
-int idx=0;
-int k,j,l;
-char *c;
-char read_message[1000];
-    //ssize_t retval = 0;
-    PDEBUG("read %zu bytes with offset %lld",count,*f_pos);
-    /**
-     * TODO: handle read
-     */
-     struct aesd_dev *dev = filp->private_data;
+	int i=0;
+	int size=0;
+	int idx=0;
+	int k,j,l;
+	char *c;
+	char read_message[1000];
+	//ssize_t retval = 0;
+	//PDEBUG("read %zu bytes with offset %lld",count,*f_pos);
+	/**
+	 * TODO: handle read
+	 */
+	struct aesd_dev *dev = filp->private_data;
+
+	memset(read_message, 0, sizeof(read_message));
 
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
@@ -173,8 +175,8 @@ char read_message[1000];
 	while (dev->rp == dev->wp) { /* nothing to read */
 		mutex_unlock(&dev->lock); /* release the lock */
 		//if (filp->f_flags & O_NONBLOCK)
-		PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
-			return -EAGAIN;
+		//PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
+		return -EAGAIN;
 		//PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
 		//if (wait_event_interruptible(dev->inq, (dev->rp != dev->wp)))
 		//	return -ERESTARTSYS; /* signal: tell the fs layer to handle it */
@@ -192,57 +194,60 @@ char read_message[1000];
 		size++;
 		if(*(c++) == '\n'){
 			dev->entry[i].size=size;
-			PDEBUG("%d size\n",size);
+			//PDEBUG("%d size\n",size);
 			size=0;
 			i++;
 		}
 
 	}
 
-	PDEBUG("%d commands\n",i);
-	
+	//PDEBUG("%d commands\n",i);
+
 	if (i > 10)
 		k = (i-10);
 	else /* the write pointer has wrapped, return data up to dev->end */
 		k = 0;
-		
-	PDEBUG("%d k\n",k);
+
+	//PDEBUG("%d k\n",k);	
 	c=dev->buffer;
 
 	for(l=0; l < k; l++){
 
- 		for(j=0; j < dev->entry[l].size; j++){
+		for(j=0; j < dev->entry[l].size; j++){
 			*(c++);
 		}
 
 	}
 
+	dev->rp=c;
+
 
 	for(l=k; l < i; l++){
 
- 		for(j=0; j < dev->entry[l].size; j++){
-	
+		for(j=0; j < dev->entry[l].size; j++){
+
 			//*(dev->entry[l].buffptr) = *(c);
-			read_message[idx]=*(c++);
+			//PDEBUG("%c\n",*(c));	
+			idx++;
 			//PDEBUG("entry: %c buff: %c\n",*(dev->entry[l].buffptr++), *(c++));
-			PDEBUG("entry: %c\n",read_message[idx++]);	
+			//PDEBUG("entry: %c\n",read_message[idx++]);	
 		}
 
 	}
-
 
 	/* ok, data is there, return something */
 	if (dev->wp > dev->rp)
 		count = min(count, (size_t)(dev->wp - dev->rp));
 	else /* the write pointer has wrapped, return data up to dev->end */
 		count = min(count, (size_t)(dev->end - dev->rp));
+	count = idx;
 
-	if (copy_to_user(buf, read_message, idx)) {
+	if (copy_to_user(buf, dev->rp, count)) {
 		mutex_unlock (&dev->lock);
 		return -EFAULT;
 	}
 
-	
+
 	dev->rp += count;
 	if (dev->rp == dev->end)
 		dev->rp = dev->buffer; /* wrapped */
@@ -250,9 +255,9 @@ char read_message[1000];
 
 	/* finally, awake any writers and return */
 	wake_up_interruptible(&dev->outq);
-	PDEBUG("\"%s\" did read %li bytes\n",current->comm, (long)count);
+	PDEBUG("\"%s\" did read %d bytes\n",current->comm, idx);
 	return count;
-    //return retval;
+	//return retval;
 }
 
 /* Wait for space for writing; caller must hold device semaphore.  On
@@ -261,7 +266,7 @@ static int aesd_getwritespace(struct aesd_dev *dev, struct file *filp)
 {
 	while (spacefree(dev) == 0) { /* full */
 		DEFINE_WAIT(wait);
-		
+
 		mutex_unlock(&dev->lock);
 		if (filp->f_flags & O_NONBLOCK)
 			return -EAGAIN;
@@ -286,14 +291,14 @@ static int spacefree(struct aesd_dev *dev)
 	return ((dev->rp + dev->buffersize - dev->wp) % dev->buffersize) - 1;
 }
 ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
-                loff_t *f_pos)
+		loff_t *f_pos)
 {
-    //ssize_t retval = -ENOMEM;
-    //PDEBUG("write %zu bytes with offset %lld",count,*f_pos);
-    /**
-     * TODO: handle write
-     */
-     	struct aesd_dev *dev = filp->private_data;
+	//ssize_t retval = -ENOMEM;
+	//PDEBUG("write %zu bytes with offset %lld",count,*f_pos);
+	/**
+	 * TODO: handle write
+	 */
+	struct aesd_dev *dev = filp->private_data;
 	int result;
 
 	if (mutex_lock_interruptible(&dev->lock))
@@ -309,7 +314,7 @@ ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
 		count = min(count, (size_t)(dev->end - dev->wp)); /* to end-of-buf */
 	else /* the write pointer has wrapped, fill up to rp-1 */
 		count = min(count, (size_t)(dev->rp - dev->wp - 1));
-	PDEBUG("Going to accept %li bytes to %p from %p\n", (long)count, dev->wp, buf);
+
 	if (copy_from_user(dev->wp, buf, count)) {
 		mutex_unlock(&dev->lock);
 		return -EFAULT;
@@ -324,61 +329,61 @@ ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
 
 	PDEBUG("\"%s\" did write %li bytes\n",current->comm, (long)count);
 	return count;
-	
-    //return retval;
+
+	//return retval;
 }
 struct file_operations aesd_fops = {
-    .owner =    THIS_MODULE,
-    .read =     aesd_read,
-    .write =    aesd_write,
-    .open =     aesd_open,
-    .release =  aesd_release,
+	.owner =    THIS_MODULE,
+	.read =     aesd_read,
+	.write =    aesd_write,
+	.open =     aesd_open,
+	.release =  aesd_release,
 };
 
 static int aesd_setup_cdev(struct aesd_dev *dev)
 {
-    int err, devno = MKDEV(aesd_major, aesd_minor);
+	int err, devno = MKDEV(aesd_major, aesd_minor);
 
-    cdev_init(&dev->cdev, &aesd_fops);
-    dev->cdev.owner = THIS_MODULE;
-    dev->cdev.ops = &aesd_fops;
-    err = cdev_add (&dev->cdev, devno, 1);
-    if (err) {
-        printk(KERN_ERR "Error %d adding aesd cdev", err);
-    }
-    return err;
+	cdev_init(&dev->cdev, &aesd_fops);
+	dev->cdev.owner = THIS_MODULE;
+	dev->cdev.ops = &aesd_fops;
+	err = cdev_add (&dev->cdev, devno, 1);
+	if (err) {
+		printk(KERN_ERR "Error %d adding aesd cdev", err);
+	}
+	return err;
 }
 
 void aesd_cleanup_module(void)
 {
-int i;
-    dev_t devno = MKDEV(aesd_major, aesd_minor);
+	int i;
+	dev_t devno = MKDEV(aesd_major, aesd_minor);
 
-    cdev_del(&aesd_device->cdev);
+	cdev_del(&aesd_device->cdev);
 
-    /**
-     * TODO: cleanup AESD specific poritions here as necessary
-     */
-     
-     kfree(aesd_device);
-     
-    unregister_chrdev_region(devno, 1);
+	/**
+	 * TODO: cleanup AESD specific poritions here as necessary
+	 */
+
+	kfree(aesd_device);
+
+	unregister_chrdev_region(devno, 1);
 
 }
 
 int aesd_init_module(void)
 {
-    dev_t dev = 0;
-    int result;
-    result = alloc_chrdev_region(&dev, aesd_minor, 1,
-            "aesdchar");
-    aesd_major = MAJOR(dev);
-    if (result < 0) {
-        printk(KERN_WARNING "Can't get major %d\n", aesd_major);
-        return result;
-    }
-    
-    	/* 
+	dev_t dev = 0;
+	int result;
+	result = alloc_chrdev_region(&dev, aesd_minor, 1,
+			"aesdchar");
+	aesd_major = MAJOR(dev);
+	if (result < 0) {
+		printk(KERN_WARNING "Can't get major %d\n", aesd_major);
+		return result;
+	}
+
+	/* 
 	 * allocate the devices -- we can't have them static, as the number
 	 * can be specified at load time
 	 */
@@ -387,25 +392,25 @@ int aesd_init_module(void)
 		result = -ENOMEM;
 		goto fail;  /* Make this more graceful */
 	}
-    memset(aesd_device,0,sizeof(struct aesd_dev));
+	memset(aesd_device,0,sizeof(struct aesd_dev));
 
-    /**
-     * TODO: initialize the AESD specific portion of the device
-     */
+	/**
+	 * TODO: initialize the AESD specific portion of the device
+	 */
 
 	init_waitqueue_head(&(aesd_device->inq));
 	init_waitqueue_head(&(aesd_device->outq));
 	mutex_init(&aesd_device->lock);
 
-    result = aesd_setup_cdev(aesd_device);
+	result = aesd_setup_cdev(aesd_device);
 
-    if( result ) {
-        unregister_chrdev_region(dev, 1);
-    }
-	
+	if( result ) {
+		unregister_chrdev_region(dev, 1);
+	}
+
 	return 0; /* succeed */
 
-  fail:
+fail:
 	aesd_cleanup_module();
 	return result;
 
