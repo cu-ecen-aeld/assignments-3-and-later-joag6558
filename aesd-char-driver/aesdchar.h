@@ -25,44 +25,6 @@
 
 #define AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED 10
 
-struct aesd_buffer_entry
-{
-    /**
-     * A location where the buffer contents in buffptr are stored
-     */
-    const char *buffptr;
-    /**
-     * Number of bytes stored in buffptr
-     */
-    size_t size;
-};
-struct aesd_dev {
 
-        wait_queue_head_t inq, outq;       /* read and write queues */
-            /**
-     * An array of pointers to memory allocated for the most recent write operations
-     */
-    struct aesd_buffer_entry  entry[AESDCHAR_MAX_WRITE_OPERATIONS_SUPPORTED];
-    /**
-     * The current location in the entry structure where the next write should
-     * be stored.
-     */
-    uint8_t in_offs;
-    /**
-     * The first location in the entry structure to read from
-     */
-    uint8_t out_offs;
-    /**
-     * set to true when the buffer entry structure is full
-     */
-    bool full;
-    
-        char *buffer, *end;                /* begin of buf, end of buf */
-        int buffersize;                    /* used in pointer arithmetic */
-        char *rp, *wp;                     /* where to read, where to write */
-        int nreaders, nwriters;            /* number of openings for r/w */
-        struct mutex lock;              /* mutual exclusion mutex */
-        struct cdev cdev;                  /* Char device structure */
-};
 
 #endif /* AESD_CHAR_DRIVER_AESDCHAR_H_ */
