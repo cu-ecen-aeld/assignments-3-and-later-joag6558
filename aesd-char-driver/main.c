@@ -18,7 +18,7 @@
 #include <linux/cdev.h>
 #include <linux/fs.h> // file_operations
 #include "aesdchar.h"
-
+#include "aesd_ioctl.h"
 
 #include <linux/moduleparam.h>
 
@@ -51,9 +51,11 @@ struct aesd_buffer_entry
 
 struct aesd_dev {
 	wait_queue_head_t inq, outq;       /* read and write queues */
-	struct aesd_buffer_entry  entry[AESDCHAR_MAX]; 
+	struct aesd_buffer_entry  entry[AESDCHAR_MAX];
+	struct aesd_seekto seekto; 
 	char *buffer, *end;                /* begin of buf, end of buf */
 	int buffersize;                    /* used in pointer arithmetic */
+	int size;
 	char *rp, *wp;                     /* where to read, where to write */
 	int nreaders, nwriters;            /* number of openings for r/w */
 	struct fasync_struct *async_queue; /* asynchronous readers */
@@ -168,6 +170,8 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 	struct aesd_dev *dev = filp->private_data;
 
 	memset(read_message, 0, sizeof(read_message));
+	
+	PDEBUG("dev->seekto.write_cmd_offset %d",dev->seekto.write_cmd_offset);
 
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
@@ -219,7 +223,7 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 
 	}
 
-	dev->rp=c;
+	dev->rp= (c + dev->seekto.write_cmd_offset + *f_pos);
 
 
 	for(l=k; l < i; l++){
@@ -240,8 +244,9 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 		count = min(count, (size_t)(dev->wp - dev->rp));
 	else /* the write pointer has wrapped, return data up to dev->end */
 		count = min(count, (size_t)(dev->end - dev->rp));
-	count = idx;
-
+	count = (idx - *f_pos);
+	dev->seekto.write_cmd_offset = *f_pos;
+PDEBUG("%d count\n",count);
 	if (copy_to_user(buf, dev->rp, count)) {
 		mutex_unlock (&dev->lock);
 		return -EFAULT;
@@ -332,8 +337,46 @@ ssize_t aesd_write(struct file *filp, const char __user *buf, size_t count,
 
 	//return retval;
 }
+
+/*
+ * The "extended" operations -- only seek
+ */
+
+loff_t aesd_llseek(struct file *filp, loff_t off, int whence)
+{
+	struct aesd_dev *dev = filp->private_data;
+	loff_t newpos;
+	
+	PDEBUG("\"%s\" utility %d whence %d off\n",current->comm, whence, off);
+
+	switch(whence) {
+	  case 0: /* SEEK_SET */
+		newpos = off;
+		PDEBUG("SEEK_SET newpos = off %d \n",newpos);
+		break;
+
+	  case 1: /* SEEK_CUR */
+		newpos = filp->f_pos + off;
+		PDEBUG("SEEK_CUR newpos = filp->f_pos + off %d \n",newpos);
+		//count = min(count, (size_t)(dev->end - dev->wp)); /* to end-of-buf */
+		break;
+
+	  case 2: /* SEEK_END */
+		newpos = dev->size + off;
+		PDEBUG("SEEK_END newpos = dev->size + off %d \n",newpos);
+		break;
+
+	  default: /* can't happen */
+		return -EINVAL;
+	}
+	if (newpos < 0) return -EINVAL;
+	filp->f_pos = newpos;
+	return newpos;
+}
+
 struct file_operations aesd_fops = {
 	.owner =    THIS_MODULE,
+	.llseek =   aesd_llseek,
 	.read =     aesd_read,
 	.write =    aesd_write,
 	.open =     aesd_open,
