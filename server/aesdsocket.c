@@ -19,7 +19,6 @@
 #include <semaphore.h>
 #include "aesd_ioctl.h"
 
-
 #define SOCKET_PORT 9000
 
 // Semaphore variables
@@ -124,7 +123,7 @@ static int msg_cnt=0;
 // server_clients Function
 void* threadfunc(void* thread_param)
 {
-	int len;
+	int len=sizeof(client_message_tmp);
 	int new_recv;
 
 	int i;
@@ -155,7 +154,7 @@ void* threadfunc(void* thread_param)
 
 
 	if(strncmp("AESDCHAR_IOCSEEKTO", client_message_tmp, 18) != 0){   
-		
+
 		for (i = 0; i < new_recv; i++){
 			client_message[file_idx] = client_message_tmp[i];
 			printf("%c", client_message_tmp[i]);
@@ -168,7 +167,7 @@ void* threadfunc(void* thread_param)
 	}
 	else {
 		printf("receiving ioctl data\n");
-		send(thread_func_args->client_sock, client_message_tmp, new_recv, 0);
+		//send(thread_func_args->client_sock, client_message_tmp, new_recv, 0);
 
 	}
 
@@ -204,12 +203,20 @@ void* threadfunc(void* thread_param)
 
 		printf("cmd_offs: %d\n", cmd_offs);
 
-		seekto.write_cmd=0;
+		seekto.write_cmd=cmd_offs;
 		seekto.write_cmd_offset=cmd_offs;
 
-		ioctl(fd,AESDCHAR_IOCSEEKTO,&seekto);
+		//ioctl(fd,AESDCHAR_IOCSEEKTO,&seekto);
+		lseek(fd,0,SEEK_CUR);
+		lseek(fd,cmd_offs,SEEK_CUR);
 
+		memset(client_message_tmp, 0, sizeof(client_message_tmp));
+		read(fd, client_message_tmp, len);
+		send(thread_func_args->client_sock, client_message_tmp, len, 0);
 
+		memset(client_message_tmp, 0, sizeof(client_message_tmp));
+		read(fd, client_message_tmp, len);
+		send(thread_func_args->client_sock, client_message_tmp, len, 0);
 
 	}
 	else{

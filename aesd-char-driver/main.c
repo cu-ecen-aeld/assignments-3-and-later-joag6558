@@ -176,11 +176,11 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 
-	while (dev->rp == dev->wp) { /* nothing to read */
+	while (dev->seekto.write_cmd_offset == *f_pos) { /* nothing to read */
 		mutex_unlock(&dev->lock); /* release the lock */
 		//if (filp->f_flags & O_NONBLOCK)
 		//PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
-		return -EAGAIN;
+		return 0;
 		//PDEBUG("\"%s\" reading: going to sleep\n", current->comm);
 		//if (wait_event_interruptible(dev->inq, (dev->rp != dev->wp)))
 		//	return -ERESTARTSYS; /* signal: tell the fs layer to handle it */
@@ -223,7 +223,7 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 
 	}
 
-	dev->rp= (c + dev->seekto.write_cmd_offset + *f_pos);
+	dev->rp= (c + *f_pos);
 
 
 	for(l=k; l < i; l++){
