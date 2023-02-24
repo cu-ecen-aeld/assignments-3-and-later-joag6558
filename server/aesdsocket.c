@@ -119,7 +119,6 @@ void term_handler()
 }
 
 static int file_idx=0;
-static int msg_cnt=0;
 // server_clients Function
 void* threadfunc(void* thread_param)
 {
@@ -172,7 +171,6 @@ void* threadfunc(void* thread_param)
 	}
 
 
-
 	sem_post(&sem_data);
 
 
@@ -211,11 +209,17 @@ void* threadfunc(void* thread_param)
 		lseek(fd,cmd_offs,SEEK_CUR);
 
 		memset(client_message_tmp, 0, sizeof(client_message_tmp));
-		read(fd, client_message_tmp, len);
-		usleep(1000);
-		send(thread_func_args->client_sock, client_message_tmp, len, 0);
+		
+		//send(thread_func_args->client_sock, client_message_tmp, len, 0);
 
-		memset(client_message_tmp, 0, sizeof(client_message_tmp));
+		read(fd, client_message_tmp, len);
+//usleep(100000);
+//printf(" the message was: %s\n", client_message_tmp);
+//printf("cmd_offs: %d\n", cmd_offs);
+
+		send(thread_func_args->client_sock, &client_message[cmd_offs], file_idx-cmd_offs, 0);
+
+		//memset(client_message_tmp, 0, sizeof(client_message_tmp));
 		read(fd, client_message_tmp, len);
 		//send(thread_func_args->client_sock, client_message_tmp, len, 0);
 
