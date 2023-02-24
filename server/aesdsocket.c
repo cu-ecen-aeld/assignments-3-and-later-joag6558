@@ -216,7 +216,7 @@ void* threadfunc(void* thread_param)
 
 		memset(client_message_tmp, 0, sizeof(client_message_tmp));
 		read(fd, client_message_tmp, len);
-		send(thread_func_args->client_sock, client_message_tmp, len, 0);
+		//send(thread_func_args->client_sock, client_message_tmp, len, 0);
 
 	}
 	else{
