@@ -170,7 +170,7 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 	struct aesd_dev *dev = filp->private_data;
 
 	memset(read_message, 0, sizeof(read_message));
-	
+
 	PDEBUG("dev->seekto.write_cmd_offset %d",dev->seekto.write_cmd_offset);
 
 	if (mutex_lock_interruptible(&dev->lock))
@@ -246,7 +246,7 @@ ssize_t aesd_read(struct file *filp, char __user *buf, size_t count,
 		count = min(count, (size_t)(dev->end - dev->rp));
 	count = (idx - *f_pos);
 	dev->seekto.write_cmd_offset = *f_pos;
-PDEBUG("%d count\n",count);
+	PDEBUG("%d count\n",count);
 	if (copy_to_user(buf, dev->rp, count)) {
 		mutex_unlock (&dev->lock);
 		return -EFAULT;
@@ -346,28 +346,28 @@ loff_t aesd_llseek(struct file *filp, loff_t off, int whence)
 {
 	struct aesd_dev *dev = filp->private_data;
 	loff_t newpos;
-	
+
 	PDEBUG("\"%s\" utility %d whence %d off\n",current->comm, whence, off);
 
 	switch(whence) {
-	  case 0: /* SEEK_SET */
-		newpos = off;
-		PDEBUG("SEEK_SET newpos = off %d \n",newpos);
-		break;
+		case 0: /* SEEK_SET */
+			newpos = off;
+			PDEBUG("SEEK_SET newpos = off %d \n",newpos);
+			break;
 
-	  case 1: /* SEEK_CUR */
-		newpos = filp->f_pos + off;
-		PDEBUG("SEEK_CUR newpos = filp->f_pos + off %d \n",newpos);
-		//count = min(count, (size_t)(dev->end - dev->wp)); /* to end-of-buf */
-		break;
+		case 1: /* SEEK_CUR */
+			newpos = filp->f_pos + off;
+			PDEBUG("SEEK_CUR newpos = filp->f_pos + off %d \n",newpos);
+			//count = min(count, (size_t)(dev->end - dev->wp)); /* to end-of-buf */
+			break;
 
-	  case 2: /* SEEK_END */
-		newpos = dev->size + off;
-		PDEBUG("SEEK_END newpos = dev->size + off %d \n",newpos);
-		break;
+		case 2: /* SEEK_END */
+			newpos = dev->size + off;
+			PDEBUG("SEEK_END newpos = dev->size + off %d \n",newpos);
+			break;
 
-	  default: /* can't happen */
-		return -EINVAL;
+		default: /* can't happen */
+			return -EINVAL;
 	}
 	if (newpos < 0) return -EINVAL;
 	filp->f_pos = newpos;
